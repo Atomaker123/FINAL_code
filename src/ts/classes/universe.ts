@@ -295,8 +295,14 @@ export class Universe {
       const padded = pad(idx + 1, 3);
       const textureLow = lowTextures.assetsLow.textures[padded + "_quarter"];
       if (idx >= 29) {
-        textDatum.title = textData[(idx - 29) * 2];
-        textDatum.description = textData[(idx - 29) * 2 + 1];
+        if (idx >= 327) {
+          // Custom items — text is appended after the unit section (offset 626+)
+          textDatum.title = textData[626 + (idx - 327) * 2];
+          textDatum.description = textData[626 + (idx - 327) * 2 + 1];
+        } else {
+          textDatum.title = textData[(idx - 29) * 2];
+          textDatum.description = textData[(idx - 29) * 2 + 1];
+        }
         if (!keepItemTitles.has(normalizeTitle(textDatum.title))) {
           continue;
         }

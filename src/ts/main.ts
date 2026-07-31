@@ -112,9 +112,9 @@ loader.load(async (loader, resources) => {
   const highJSONCount = 5;
   for (let i = 0; i <= highJSONCount; i++) {
     highLoader.add(`main${i}`, `img/textures/new_items_${i}.json`);
-      // === CUSTOM ITEM TEXTURES ===
-      highLoader.add("mainCustom", `img/textures/new_items_custom.json`);
   }
+  // === CUSTOM ITEM TEXTURES ===
+  highLoader.add("mainCustom", `img/textures/new_items_custom.json`);
   highLoader.load(async (highLoader, highResources) => {
     const hqToggle:any = document.querySelector('#hqToggle');
     isHQ = true
@@ -168,6 +168,7 @@ loader.load(async (loader, resources) => {
           for (let i = 0; i <= 5; i++) {
             highLoader.add(`main${i}`, `img/textures/new_items_${i}.json`);
           }
+          highLoader.add("mainCustom", `img/textures/new_items_custom.json`);
         }
         universe.setQuality(isHQ)
       }
