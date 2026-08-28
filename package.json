@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "node build-site.cjs",
+    "build:atom": "vite build",
     "dev": "vite",
     "start": "node serve.cjs"
   },

@@ -1,0 +1,6 @@
+﻿{
+  "buildCommand": "node build-site.cjs",
+  "outputDirectory": "dist-site",
+  "cleanUrls": false,
+  "trailingSlash": false
+}
