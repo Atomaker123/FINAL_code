@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout - Atomaker</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6e6fa; 
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #d0c8f0;
+            padding: 10px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-title h1 {
+            color: #4169e1;
+            font-size: 28px;
+            margin: 0;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: normal;
+        }
+
+        .logo-title h2 {
+            font-size: 16px;
+            color: #4169e1;
+            margin: 0;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: normal;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #3333cc;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1300px; 
+            margin: 60px auto;
+            display: flex;
+            gap: 40px; 
+            align-items: center;
+        }
+
+        /* Image Side - Positioned to match previous pages */
+        .image-side {
+            flex: 0.9; 
+            text-align: center;
+        }
+
+        .image-side img {
+            width: 90%; 
+            max-width: 360px; 
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            left: -30px; 
+        }
+
+        /* Content Side */
+        .model-side {
+            flex: 2.1; 
+        }
+
+        .content-box {
+            background-color: #d0c8f0;
+            padding: 45px 50px; 
+            border-radius: 25px;
+            border: 2px solid #4c4ca4;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-family: "Playpen Sans", cursive;
+        }
+
+        .text-content {
+            text-align: center; 
+            line-height: 1.75;
+            color: #333;
+        }
+
+        .text-content h3 {
+            color: #3333cc;
+            font-size: 2.8rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .text-content p {
+            font-size: 1.15rem;
+            margin-bottom: 20px;
+        }
+
+        .layout-list {
+            list-style-type: none;
+            padding: 0;
+            text-align: left; /* Easier to read for points */
+            display: inline-block;
+            max-width: 90%;
+        }
+
+        .layout-list li {
+            font-size: 1.15rem;
+            margin-bottom: 15px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .layout-list li::before {
+            content: "•";
+            color: #3333cc;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            font-size: 14px;
+            color: #4169e1;
+            background-color: #d0c8f0;
+            font-family: "Playpen Sans", cursive;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+                gap: 50px;
+            }
+            .image-side img { left: 0; }
+            .layout-list { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-title">
+            <img src="atomaker-logo.png" alt="Atomaker Logo" style="height:40px;">
+            <div>
+                <h1>Atomaker</h1>
+                <h2>Visualizing the Invisible</h2>
+            </div>
+        </div>
+        <nav>
+            <a href="homepage.html">Home</a>
+            <a href="aboutus.html">About Us</a>
+            <a href="ourmission.html">Our Mission</a>
+            <a href="layout.html">Layout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="image-side">
+            <img src="atomakerlogo1.png" alt="Atomaker Logo">
+        </div>
+
+        <div class="model-side">
+            <div class="content-box">
+                <div class="text-content">
+                    <h3>Layout</h3>
+                    <p>
+                        Atomaker is designed as a 3-part interactive website, each section offering a unique perspective on atomic science.
+                    </p>
+                    
+                    <ul class="layout-list">
+                        <li><strong>The first part</strong> focuses on the history of atomic models, presenting a clear timeline of discoveries and the groundbreaking contributions made by scientists over centuries. This section helps learners appreciate how ideas about atoms evolved, from early philosophical concepts to modern quantum models.</li>
+                        
+                        <li><strong>The second part</strong> is the most engaging and immersive: “Build Your Own Atom.” Here, students can actively construct atoms by adding protons, neutrons, and electrons. This hands-on activity encourages experimentation, creativity, and a deeper understanding of how atomic structures form the basis of matter.</li>
+                        
+                        <li><strong>The final part</strong>, Scale of the Universe, places atomic science in a broader context. It visually demonstrates proportions, showing how subatomic particles compare to everyday objects and ultimately to the vast universe.</li>
+                    </ul>
+
+                    <p style="margin-top: 20px;">
+                        Together, these sections make learning interactive, intuitive, and inspiring.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

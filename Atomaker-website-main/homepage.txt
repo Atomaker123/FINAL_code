@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Atomaker - Visualizing the Invisible</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Playpen Sans', Arial, sans-serif;
+      background-color: #e6e6fa;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    header {
+      background-color: #d0c8f0;
+      padding: 10px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-title img {
+      height: 60px;
+      width: auto;
+    }
+
+    nav a {
+      margin: 0 15px;
+      text-decoration: none;
+      color: #3333cc;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 40px 20px;
+      justify-content: space-between;
+      align-items: center; 
+    }
+
+    .left-section {
+      flex: 1;
+      margin-right: 20px;
+      max-width: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* --- CSS Slider (5 Images | 4s Cycle) --- */
+    .image-box {
+      overflow: hidden; 
+      width: 450px;     
+      height: 300px;    
+      margin: 0 auto;
+      background: transparent; 
+    }
+
+    .slider-track {
+      display: flex;
+      width: 500%;      /* 5 images = 500% */
+      height: 100%;
+      /* 5 images * 4 seconds = 20 seconds total */
+      animation: slide-cycle 20s infinite;
+    }
+
+    .slider-track img {
+      width: 20%;       /* 1/5th of the track */
+      height: 100%;
+      object-fit: contain; 
+      display: block;
+    }
+
+    /* Animation Math (20s Total):
+       0% to 15% (3s): Image 1 stays
+       15% to 20% (1s): Slide to Image 2
+       20% to 35% (3s): Image 2 stays
+       ... and so on
+    */
+    @keyframes slide-cycle {
+      0%, 15%   { transform: translateX(0); }
+      20%, 35%  { transform: translateX(-20%); }
+      40%, 55%  { transform: translateX(-40%); }
+      60%, 75%  { transform: translateX(-60%); }
+      80%, 95%  { transform: translateX(-80%); }
+      100%      { transform: translateX(0); }
+    }
+
+    .right-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      max-width: 45%;
+    }
+
+    .box {
+      background-color: #d0c8f0;
+      border: 2px solid #4c4ca4;
+      padding: 16px;
+      border-radius: 15px;
+      display: flex;
+      align-items: flex-start;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease;
+    }
+
+    a .box { cursor: pointer; }
+    a .box:hover { transform: translateY(-4px); }
+    a { text-decoration: none; color: inherit; }
+
+    .box img {
+      width: 60px;
+      height: auto;
+      margin-right: 20px;
+      border-radius: 10px;
+    }
+
+    .box-content h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: #3333cc;
+      font-size: 20px;
+    }
+
+    .box-content ul {
+      padding-left: 20px;
+      color: #333;
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #4169e1;
+      background-color: #d0c8f0;
+      margin-top: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; align-items: center; }
+      .left-section, .right-section { max-width: 90%; margin-right: 0; margin-bottom: 50px; }
+      .image-box { width: 100%; height: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo-title">
+      <img src="atomakerheader.png" alt="Atomaker Header" />
+    </div>
+    <nav>
+      <a href="homepage.html">Home</a>
+      <a href="aboutus.html">About Us</a>
+      <a href="ourmission.html">Our Mission</a>
+      <a href="layout.html">Layout</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="left-section">
+      <div class="image-box">
+        <div class="slider-track">
+          <img src="atomakerlogo1.png" alt="Atomaker Logo" />
+          <img src="historypage.png" alt="History Page" />
+          <img src="bohrpage.png" alt="Bohr Page" />
+          <img src="buildyourownatompage.png" alt="Build Your Own Atom Page" />
+          <img src="scaleoftheuniversepage.gif.mp4" alt="Scale of the Universe Page" />
+        </div>
+      </div>
+    </div>
+
+    <div class="right-section">
+
+      <a href="history.html">
+        <div class="box">
+          <img src="history-thumbnail.png" alt="Atomic Model Timeline" />
+          <div class="box-content">
+            <h3>History of Atomic Models</h3>
+            <ul>
+              <li>Timeline of atomic models</li>
+              <li>Profiles of scientists</li>
+              <li>Evolution of theories</li>
+            </ul>
+          </div>
+        </div>
+      </a>
+
+      <a href="buildyourownatom.html">
+        <div class="box">
+          <img src="atom-icon.png" alt="Atom Icon" />
+          <div class="box-content">
+            <h3>Build Your Own Atom</h3>
+            <ul>
+              <li>Create your own atom</li>
+              <li>Real-time feedback</li>
+              <li>Properties of the atom</li>
+              <li>Interactive 3D interface</li>
+            </ul>
+          </div>
+        </div>
+      </a>
+
+      <a href="scaleoftheuniverse.html">
+        <div class="box">
+          <img src="universe-icon.png" alt="Universe Icon" />
+          <div class="box-content">
+            <h3>Scale of the Universe</h3>
+            <ul>
+              <li>From Quarks to Galaxies</li>
+              <li>Zoomable interface</li>
+              <li>Proportion of all objects to one another</li>
+            </ul>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</body>
+</html>

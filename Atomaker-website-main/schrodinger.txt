@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atomaker - Erwin Schrödinger</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6e6fa; 
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #d0c8f0;
+            padding: 10px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-title h1 {
+            color: #4169e1;
+            font-size: 28px;
+            margin: 0;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: normal;
+        }
+
+        .logo-title h2 {
+            font-size: 16px;
+            color: #4169e1;
+            margin: 0;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: normal;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #3333cc;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1250px; 
+            margin: 50px auto;
+            display: flex;
+            gap: 40px;
+            align-items: center; 
+        }
+
+        .profile-side {
+            flex: 0.8;
+            text-align: left;
+        }
+
+        .profile-side img {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            border: 5px solid #4169e1;
+            background: white;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+
+        .profile-side h2 {
+            font-family: "Playpen Sans", cursive;
+            color: #3333cc;
+            font-size: 2.8rem;
+            margin: 0;
+        }
+
+        .years {
+            font-size: 1.3rem;
+            color: #4169e1;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .model-side {
+            flex: 2.5; 
+        }
+
+        .content-box {
+            background-color: #d0c8f0;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #4c4ca4;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-family: "Playpen Sans", cursive;
+        }
+
+        .model-img {
+            max-width: 250px;
+            height: auto;
+            border: 5px solid #4169e1;
+            border-radius: 15px;
+            background: white;
+            padding: 5px;
+        }
+
+        .model-caption {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            font-size: 1rem;
+            color: #4169e1;
+            font-weight: bold;
+        }
+
+        .text-content {
+            text-align: center; 
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .text-content h3 {
+            color: #3333cc;
+            font-size: 2rem;
+            margin-top: 0;
+        }
+
+        .list-wrapper {
+            display: inline-block;
+            text-align: left;
+            margin: 10px 0;
+        }
+
+        .list-wrapper p {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .list-wrapper ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .list-wrapper li {
+            margin-bottom: 8px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #4169e1;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background-color: #3333cc;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            font-size: 14px;
+            color: #4169e1;
+            background-color: #d0c8f0;
+            font-family: "Playpen Sans", cursive;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 850px) {
+            .container {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .profile-side { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-title">
+            <img src="atomaker-logo.png" alt="Atomaker Logo" style="height:40px;">
+            <div>
+                <h1>Atomaker</h1>
+                <h2>Visualizing the Invisible</h2>
+            </div>
+        </div>
+        <nav>
+            <a href="homepage.html">Home</a>
+            <a href="aboutus.html">About Us</a>
+            <a href="ourmission.html">Our Mission</a>
+            <a href="layout.html">Layout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="profile-side">
+            <img src="schrodinger.png" alt="Erwin Schrödinger">
+            <h2>Erwin Schrödinger</h2>
+            <p class="years">1887 – 1961</p>
+            <a href="history.html" class="back-btn">← Back to Timeline</a>
+        </div>
+
+        <div class="model-side">
+            <div class="content-box">
+                <img src="schrodingermodel.png" alt="Quantum Mechanical Model" class="model-img">
+                <span class="model-caption">Schrödinger's Model of an Atom</span>
+                
+                <div class="text-content">
+                    <h3>The Electron Cloud Model</h3>
+                    <p>
+                        Austrian physicist Erwin Schrödinger used mathematical equations to describe the likelihood of 
+                        finding an electron in a certain position. This model is the foundation of modern atomic physics.
+                    </p>
+                    
+                    <div class="list-wrapper">
+                        <p>Postulates:</p>
+                        <ul>
+                            <li>Electrons do not move in set paths, but in waves.</li>
+                            <li>It is impossible to know the exact location and momentum of an electron.</li>
+                            <li>Electrons exist in "orbitals" (regions of space with high probability).</li>
+                            <li>The nucleus is surrounded by an "electron cloud" of varying density.</li>
+                        </ul>
+                    </div>
+
+                    <p>
+                        His work moved the atom from a 2D planetary system to a 3D mathematical cloud, accurately 
+                        representing the mysterious nature of subatomic particles.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

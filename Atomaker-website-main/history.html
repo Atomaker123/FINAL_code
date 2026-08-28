@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Atomaker - History of Atomic Models</title>
+
+ <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&display=swap" rel="stylesheet">
+
+ <style>
+ body {
+ font-family: Arial, sans-serif;
+ background-color: #e6e6fa; 
+ margin: 0;
+ padding: 0;
+ }
+
+ header {
+ background-color: #d0c8f0;
+ padding: 10px 30px;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ flex-wrap: wrap;
+ box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+ }
+
+ .logo-title {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ }
+
+ .logo-title h1 {
+ color: #4169e1;
+ font-size: 28px;
+ margin: 0;
+ font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+ font-weight: normal;
+ }
+
+ .logo-title h2 {
+ font-size: 16px;
+ color: #4169e1;
+ margin: 0;
+ font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+ font-weight: normal;
+ }
+
+ nav a {
+ margin: 0 15px;
+ text-decoration: none;
+ color: #3333cc;
+ font-weight: bold;
+ font-size: 16px;
+ }
+
+ .container {
+ width: 90%;
+ max-width: 1200px;
+ margin: 40px auto;
+ }
+
+ h2 {
+ font-family: "Playpen Sans", cursive;
+ color: #3333cc;
+ text-align: center;
+ font-size: 2.2rem;
+ margin-bottom: 30px;
+ }
+
+ .timeline {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 320px)); 
+ gap: 20px;
+ margin-bottom: 50px;
+ justify-content: center; 
+ }
+
+ .timeline-link {
+ text-decoration: none;
+ color: inherit;
+ display: block;
+ }
+
+ .interactive-models {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+ gap: 20px;
+ margin-bottom: 50px;
+ }
+
+ .event, .model {
+ background-color: #d0c8f0;
+ border: 2px solid #4c4ca4;
+ padding: 20px;
+ border-radius: 15px;
+ text-align: center;
+ box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+ font-family: "Playpen Sans", cursive;
+ transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+ height: 100%; 
+ box-sizing: border-box;
+ }
+
+ .event:hover, .model:hover {
+ transform: scale(1.05);
+ box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
+ border-color: #3333cc;
+ }
+
+ .event img {
+ width: 140px;
+ height: 140px;
+ border-radius: 50%;
+ margin-bottom: 15px;
+ border: 3px solid #4169e1;
+ background: white;
+ object-fit: cover; 
+ }
+
+ h3, h4 {
+ color: #3333cc;
+ margin-top: 0;
+ }
+
+ p {
+ color: #333;
+ font-size: 1rem;
+ line-height: 1.4;
+ }
+
+ .model a {
+ display: inline-block;
+ margin-top: 15px;
+ background-color: #4169e1;
+ color: white;
+ padding: 10px 20px;
+ text-decoration: none;
+ border-radius: 10px;
+ transition: background 0.3s;
+ }
+
+ .model a:hover {
+ background-color: #3333cc;
+ }
+
+ .footer {
+ text-align: center;
+ padding: 25px;
+ font-size: 14px;
+ color: #4169e1;
+ background-color: #d0c8f0;
+ font-family: "Playpen Sans", cursive;
+ margin-top: 40px;
+ }
+
+ @media (max-width: 768px) {
+ header { flex-direction: column; text-align: center; gap: 15px; }
+ .container { width: 95%; }
+ }
+ </style>
+</head>
+<body>
+
+ <header>
+ <div class="logo-title">
+ <img src="atomaker-logo.png" alt="Atomaker Logo" style="height:40px;">
+ <div>
+ <h1>Atomaker</h1>
+ <h2>Visualizing the Invisible</h2>
+ </div>
+ </div>
+ <nav>
+ <a href="homepage.html">Home</a>
+ <a href="aboutus.html">About Us</a>
+ <a href="ourmission.html">Our Mission</a>
+ <a href="layout.html">Layout</a>
+ </nav>
+ </header>
+
+ <div class="container">
+ <section id="timeline">
+ <h2>Timeline of Atomic Discoveries</h2>
+ <div class="timeline">
+ 
+ <a href="democritus.html" class="timeline-link">
+ <div class="event">
+ <img src="democritus.png" alt="Democritus">
+ <h3>Democritus (400 BC)</h3>
+ <p>Proposed the idea of indivisible particles called "atomos".</p>
+ </div>
+ </a>
+
+ <a href="dalton.html" class="timeline-link">
+ <div class="event">
+ <img src="dalton.png" alt="John Dalton">
+ <h3>John Dalton (1803)</h3>
+ <p>Developed the Atomic Theory of Matter based on chemical weights.</p>
+ </div>
+ </a>
+
+ <a href="thomson.html" class="timeline-link">
+ <div class="event">
+ <img src="thomson.png" alt="J.J. Thomson">
+ <h3>J.J. Thomson (1897)</h3>
+ <p>Discovered the electron and proposed the "plum pudding" model.</p>
+ </div>
+ </a>
+
+ <a href="rutherford.html" class="timeline-link">
+ <div class="event">
+ <img src="rutherford.png" alt="Ernest Rutherford">
+ <h3>Ernest Rutherford (1911)</h3>
+ <p>Proved the existence of a dense, positive nucleus.</p>
+ </div>
+ </a>
+
+ <a href="bohr.html" class="timeline-link">
+ <div class="event">
+ <img src="bohr.png" alt="Niels Bohr">
+ <h3>Niels Bohr (1913)</h3>
+ <p>Introduced quantized electron orbits around the nucleus.</p>
+ </div>
+ </a>
+
+ <a href="schrodinger.html" class="timeline-link">
+ <div class="event">
+ <img src="schrodinger.png" alt="Erwin Schrödinger">
+ <h3>Erwin Schrödinger (1926)</h3>
+ <p>Developed the quantum mechanical model using probability clouds.</p>
+ </div>
+ </a>
+
+ </div>
+ </section>
+
+</body>
+</html>

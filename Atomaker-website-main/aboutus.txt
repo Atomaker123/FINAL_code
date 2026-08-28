@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Atomaker</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e6e6fa; 
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #d0c8f0;
+            padding: 10px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-title h1 {
+            color: #4169e1;
+            font-size: 28px;
+            margin: 0;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: normal;
+        }
+
+        .logo-title h2 {
+            font-size: 16px;
+            color: #4169e1;
+            margin: 0;
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: normal;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #3333cc;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1300px; 
+            margin: 60px auto;
+            display: flex;
+            gap: 40px; 
+            align-items: center;
+        }
+
+        /* Image Side - Positioned relatively to slide left */
+        .image-side {
+            flex: 0.9; 
+            text-align: center;
+        }
+
+        .image-side img {
+            width: 90%; 
+            max-width: 360px; 
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            position: relative;
+            left: -30px; /* Moves the image 30 pixels to the left */
+        }
+
+        /* Content Side */
+        .model-side {
+            flex: 2.1; 
+        }
+
+        .content-box {
+            background-color: #d0c8f0;
+            padding: 45px 50px; 
+            border-radius: 25px;
+            border: 2px solid #4c4ca4;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-family: "Playpen Sans", cursive;
+        }
+
+        .text-content {
+            text-align: center; 
+            line-height: 1.75;
+            color: #333;
+        }
+
+        .text-content h3 {
+            color: #3333cc;
+            font-size: 2.8rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .text-content p {
+            font-size: 1.15rem;
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 25px;
+            font-size: 14px;
+            color: #4169e1;
+            background-color: #d0c8f0;
+            font-family: "Playpen Sans", cursive;
+            margin-top: 60px;
+        }
+
+        @media (max-width: 1100px) {
+            .container {
+                flex-direction: column;
+                text-align: center;
+                gap: 50px;
+            }
+            .image-side img { left: 0; } /* Reset for mobile screens */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-title">
+            <img src="atomaker-logo1.png" alt="Atomaker Logo" style="height:40px;">
+            <div>
+                <h1>Atomaker</h1>
+                <h2>Visualizing the Invisible</h2>
+            </div>
+        </div>
+        <nav>
+            <a href="homepage.html">Home</a>
+            <a href="aboutus.html">About Us</a>
+            <a href="ourmission.html">Our Mission</a>
+            <a href="layout.html">Layout</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="image-side">
+            <img src="atomakerlogo1.png" alt="Atomaker Logo">
+        </div>
+
+        <div class="model-side">
+            <div class="content-box">
+                <div class="text-content">
+                    <h3>About Us</h3>
+                    <p>
+                        Understanding atomic structure is a cornerstone of science education, forming the basis of chemistry, physics, and modern technology. Yet traditional teaching methods often struggle to spark curiosity or provide intuitive visualization. Static diagrams and lectures can feel abstract, leaving students with fragmented knowledge rather than a clear sense of how atoms truly function.
+                    </p>
+                    <p>
+                        <strong>Atomaker</strong> bridges this gap by offering an immersive 3D model of the atom, designed to enhance conceptual clarity for both students and teachers. Learners can actively build atoms, experiment with particle arrangements, and observe how protons, neutrons, and electrons interact to form matter.
+                    </p>
+                    <p>
+                        This hands-on approach transforms atomic theory into a dynamic experience, encouraging exploration and deeper understanding. Atomaker also integrates history and cosmic context, showing how atomic discoveries shaped science and how atoms connect to the universe. By blending storytelling with interactive design, the platform makes learning accessible, engaging, and inspiring.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
