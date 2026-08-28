@@ -9,15 +9,9 @@ const port = process.env.PORT || 3000;
 
 app.use(compression())
 
-// Serve the Atomaker website at the root
-app.use(express.static(path.join(__dirname, 'Atomaker-website-main'), { index: 'homepage.html' }))
-
-// Serve the Scale of the Universe app at /sotu/
-app.use('/sotu', express.static(path.join(__dirname, 'dist')))
+// Serve the unified website from dist/
+app.use(express.static(path.join(__dirname, 'dist')))
 app.get('/sotu', (req, res) => res.redirect('/sotu/'))
-
-// Serve the Build Your Own Atom React app at /atom/
-app.use('/atom', express.static(path.join(__dirname, 'dist-atom')))
 app.get('/atom', (req, res) => res.redirect('/atom/'))
 
 

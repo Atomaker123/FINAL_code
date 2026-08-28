@@ -5,7 +5,7 @@ const { execSync } = require('child_process');
 console.log('1. Building React Atom app with Vite...');
 execSync('npx vite build', { stdio: 'inherit' });
 
-const outDir = path.join(__dirname, 'dist-site');
+const outDir = path.join(__dirname, 'dist');
 if (fs.existsSync(outDir)) {
   fs.rmSync(outDir, { recursive: true, force: true });
 }
@@ -23,7 +23,7 @@ if (fs.existsSync(homepagePath)) {
 }
 
 console.log('3. Copying Scale of the Universe to /sotu/ ...');
-const sotuSrc = path.join(__dirname, 'dist');
+const sotuSrc = path.join(__dirname, 'sotu-app');
 const sotuDest = path.join(outDir, 'sotu');
 if (fs.existsSync(sotuSrc)) {
   fs.cpSync(sotuSrc, sotuDest, { recursive: true });
@@ -36,4 +36,4 @@ if (fs.existsSync(atomSrc)) {
   fs.cpSync(atomSrc, atomDest, { recursive: true });
 }
 
-console.log('✓ Unified website built successfully into dist-site/');
+console.log('✓ Unified website built successfully into dist/');

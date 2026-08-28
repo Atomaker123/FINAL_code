@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>The Scale of the Universe 2</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@1,900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/styles.css">
+  <link rel="stylesheet" type="text/css" href="css/spin.css">
+  <link rel="stylesheet" type="text/css" href="css/dialog-polyfill.css">
+</head>
+<body>
+  <div class="bgEarth fullBg"></div>
+  <div id="frame" style="visibility: visible;" class="frameStyle">
+    <a href="#" class="forward" id="autoForward">
+      <img src="img/backarrow.png" id="forwardImage" ></img>
+    </a>
+    <a href="#" class="backward" id="autoBackward" >
+      <img src="img/backarrow.png" id="backwardImage"></img>
+    </a>
+    <div class="sk-chase" id="loadingSpin" style="margin-left: auto; margin-left: auto; top: 20%;">
+      <div class="sk-chase-dot"></div>
+      <div class="sk-chase-dot"></div>
+      <div class="sk-chase-dot"></div>
+      <div class="sk-chase-dot"></div>
+      <div class="sk-chase-dot"></div>
+      <div class="sk-chase-dot"></div>
+    </div>
+    <div class="bgSpace fullBg" id="spaceBgImage"></div>
+    <div id="sotu"></div>
+  </div>
+  </div>
+  <script>
+    (function(){
+      var _play = HTMLMediaElement.prototype.play;
+      HTMLMediaElement.prototype.play = function(){ return Promise.resolve(); };
+      window.__restoreMediaPlay = function(){ HTMLMediaElement.prototype.play = _play; };
+    })();
+  </script>
+  <script src="js/bundle.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function(){
+      try{ if(typeof startSOTU === 'function') startSOTU(); }catch(e){}
+      document.querySelectorAll('audio').forEach(function(a){ try{ a.pause(); a.src = ''; }catch(e){} });
+    });
+  </script>
+</body>
+</html>
