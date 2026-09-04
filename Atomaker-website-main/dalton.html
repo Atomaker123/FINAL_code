@@ -191,6 +191,67 @@
             }
             .profile-side { text-align: center; }
         }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+                padding: 12px 15px;
+            }
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 8px 16px;
+            }
+            nav a {
+                margin: 0 4px;
+                font-size: 15px;
+            }
+            .container {
+                width: 92%;
+                margin: 25px auto;
+                gap: 25px;
+            }
+            .profile-side img {
+                width: 150px;
+                height: 150px;
+                margin-bottom: 12px;
+            }
+            .profile-side h2 {
+                font-size: 2rem;
+            }
+            .years {
+                font-size: 1.1rem;
+            }
+            .content-box {
+                padding: 24px 18px;
+                border-radius: 18px;
+            }
+            .model-img {
+                max-width: 180px;
+            }
+            .text-content h3 {
+                font-size: 1.6rem;
+            }
+            .text-content p {
+                font-size: 0.95rem;
+                text-align: left;
+            }
+            .list-wrapper {
+                text-align: left;
+                width: 100%;
+            }
+            .list-wrapper ul {
+                font-size: 0.95rem;
+                padding-left: 18px;
+            }
+            .footer {
+                margin-top: 30px;
+                padding: 15px;
+            }
+        }
     </style>
 </head>
 <body>

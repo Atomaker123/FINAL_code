@@ -176,8 +176,8 @@ export default function App() {
   
   const [dark, setDark] = useState(true);
   const [highQuality, setHighQuality] = useState(false); // toggle for visual fidelity
-  const [sideOpen, setSideOpen] = useState(true);
-  const [infoOpen, setInfoOpen] = useState(true);
+  const [sideOpen, setSideOpen] = useState(() => typeof window !== "undefined" ? window.innerWidth > 768 : true);
+  const [infoOpen, setInfoOpen] = useState(() => typeof window !== "undefined" ? window.innerWidth > 768 : false);
   const [decayMsg, setDecayMsg] = useState<string|null>(null);
   const [isDecaying, setIsDecaying] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -284,12 +284,14 @@ export default function App() {
     if (decayTimerRef.current) clearInterval(decayTimerRef.current);
     if (activeDecayTimerRef.current) clearInterval(activeDecayTimerRef.current);
     setProtons(0);
-    setNeutrons(0);
+    setNeuttons(0);
     setElectrons(0);
     setDecayMsg(null);
     setIsDecaying(false);
     setCountdown(0);
   };
+
+  const setNeuttons = (n: number) => setNeutrons(n);
 
   const localInfo = protons > 0 ? getLocalInfo(protons, neutrons) : null;
   const elem = localInfo?.elem;
@@ -304,24 +306,24 @@ export default function App() {
 
   return (
     <div className={`w-full h-full flex flex-col overflow-hidden ${bg} transition-colors duration-300`}>
-      <div className={`flex items-center px-3 py-2 border-b ${divider} ${dark ? "bg-[#0a1018]" : "bg-white"} gap-2 shrink-0 z-10 relative`}>
-        <button onClick={() => setSideOpen(v => !v)} className={`p-1.5 rounded text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`}>☰</button>
-        <div className="flex-1 flex items-center justify-center gap-3">
-          {elem && <span className={`text-2xl font-black ${dark ? "text-slate-500" : "text-slate-300"}`}>{elem.symbol}</span>}
-          <span className={`font-bold tracking-wide ${textMain} ${isBlackHole ? "text-purple-400 animate-pulse" : ""}`}>{atomName}</span>
-          {protons > 0 && <span className={`text-xs font-semibold ${stabColor}`}>● {isStable ? "Stable" : "Unstable"}</span>}
-          <button onClick={() => setHighQuality(v => !v)} className={`ml-2 p-1.5 rounded text-sm ${dark ? "bg-slate-700 hover:bg-slate-600" : "bg-slate-300 hover:bg-slate-200"} ${textMain}`} title="Toggle high‑quality rendering">
+      <div className={`flex items-center px-2 sm:px-3 py-2 border-b ${divider} ${dark ? "bg-[#0a1018]" : "bg-white"} gap-1 sm:gap-2 shrink-0 z-20 relative`}>
+        <button onClick={() => setSideOpen(v => !v)} className={`p-1.5 rounded text-sm sm:text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`} title="Controls panel">☰</button>
+        <div className="flex-1 flex items-center justify-center gap-1.5 sm:gap-3 min-w-0 overflow-hidden">
+          {elem && <span className={`text-xl sm:text-2xl font-black shrink-0 ${dark ? "text-slate-500" : "text-slate-300"}`}>{elem.symbol}</span>}
+          <span className={`font-bold tracking-wide text-xs sm:text-base truncate ${textMain} ${isBlackHole ? "text-purple-400 animate-pulse" : ""}`}>{atomName}</span>
+          {protons > 0 && <span className={`text-[10px] sm:text-xs font-semibold shrink-0 ${stabColor}`}>● {isStable ? "Stable" : "Unstable"}</span>}
+          <button onClick={() => setHighQuality(v => !v)} className={`ml-1 sm:ml-2 px-1.5 py-1 sm:p-1.5 rounded text-[10px] sm:text-sm shrink-0 ${dark ? "bg-slate-700 hover:bg-slate-600" : "bg-slate-300 hover:bg-slate-200"} ${textMain}`} title="Toggle high‑quality rendering">
             {highQuality ? "HQ" : "LQ"}
           </button>
         </div>
-        <button onClick={() => setInfoOpen(v => !v)} className={`p-1.5 rounded text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`}>ℹ</button>
-        <button onClick={() => setDark(v => !v)} className={`p-1.5 rounded text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`}>{dark ? "☀" : "☾"}</button>
+        <button onClick={() => setInfoOpen(v => !v)} className={`p-1.5 rounded text-sm sm:text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`} title="Element information">ℹ</button>
+        <button onClick={() => setDark(v => !v)} className={`p-1.5 rounded text-sm sm:text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`}>{dark ? "☀" : "☾"}</button>
       </div>
 
       <AnimatePresence>
         {decayMsg && (
-          <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="shrink-0 overflow-hidden z-10 relative">
-            <div className={`text-xs text-center py-1.5 font-medium transition-colors ${
+          <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="shrink-0 overflow-hidden z-20 relative">
+            <div className={`text-xs text-center py-1.5 px-2 font-medium transition-colors ${
               isDecaying 
                 ? "bg-red-900/90 text-red-100 animate-pulse font-bold" 
                 : "bg-amber-900/80 text-amber-200"
@@ -337,9 +339,12 @@ export default function App() {
       <div className="flex flex-1 overflow-hidden relative">
         <AnimatePresence initial={false}>
           {sideOpen && (
-            <motion.aside initial={{width:0,opacity:0}} animate={{width:210,opacity:1}} exit={{width:0,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-r ${panelBg} flex flex-col z-10 relative`}>
+            <motion.aside initial={{x:-220,opacity:0}} animate={{x:0,opacity:1}} exit={{x:-220,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-r ${panelBg} flex flex-col z-30 absolute md:relative top-0 bottom-0 left-0 w-[220px] shadow-2xl md:shadow-none`}>
               <div className="p-3 space-y-4 overflow-y-auto flex-1">
-                <p className={`text-xs uppercase tracking-widest font-bold ${textMuted}`}>Controls</p>
+                <div className="flex items-center justify-between">
+                  <p className={`text-xs uppercase tracking-widest font-bold ${textMuted}`}>Controls</p>
+                  <button onClick={() => setSideOpen(false)} className={`md:hidden text-xs px-2 py-1 rounded ${dark ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-200 text-slate-600"}`}>✕</button>
+                </div>
                 <ParticleRow label="Protons" color="#ff3333" dark={dark} onAdd={n => setProtons(p => !isBlackHole ? p + n : p)} onRemove={n => setProtons(p => Math.max(0, p - n))} />
                 <ParticleRow label="Electrons" color="#44aaff" dark={dark} onAdd={n => setElectrons(e => !isBlackHole ? e + n : e)} onRemove={n => setElectrons(e => Math.max(0, e - n))} />
                 <ParticleRow label="Neutrons" color="#ffcc00" dark={dark} onAdd={n => setNeutrons(nn => !isBlackHole ? nn + n : nn)} onRemove={n => setNeutrons(nn => Math.max(0, nn - n))} />
@@ -374,20 +379,23 @@ export default function App() {
 
           {isBlackHole && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <div className="text-center">
-                <div className="text-purple-400 text-3xl font-black tracking-widest animate-pulse">BLACK HOLE</div>
+              <div className="text-center px-4">
+                <div className="text-purple-400 text-2xl sm:text-3xl font-black tracking-widest animate-pulse">BLACK HOLE</div>
                 <div className="text-purple-600 text-xs mt-1">Extreme particle imbalance — reset to continue</div>
               </div>
             </div>
           )}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs text-slate-500 pointer-events-none select-none z-10 bg-black/40 px-2 py-1 rounded">drag to rotate · scroll to zoom</div>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] sm:text-xs text-slate-500 pointer-events-none select-none z-10 bg-black/40 px-2 py-1 rounded text-center whitespace-nowrap">drag to rotate · pinch/scroll to zoom</div>
         </div>
 
         <AnimatePresence initial={false}>
           {infoOpen && (
-            <motion.aside initial={{width:0,opacity:0}} animate={{width:264,opacity:1}} exit={{width:0,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-l ${panelBg} flex flex-col z-10 relative`}>
+            <motion.aside initial={{x:280,opacity:0}} animate={{x:0,opacity:1}} exit={{x:280,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-l ${panelBg} flex flex-col z-30 absolute md:relative top-0 bottom-0 right-0 w-[270px] sm:w-[280px] shadow-2xl md:shadow-none`}>
               <div className="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
-                <p className={`uppercase tracking-widest font-bold ${textMuted}`}>Element Info</p>
+                <div className="flex items-center justify-between">
+                  <p className={`uppercase tracking-widest font-bold ${textMuted}`}>Element Info</p>
+                  <button onClick={() => setInfoOpen(false)} className={`md:hidden text-xs px-2 py-1 rounded ${dark ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-200 text-slate-600"}`}>✕</button>
+                </div>
                 {!elem ? (
                   <p className={textMuted}>Add protons to identify an element.</p>
                 ) : (

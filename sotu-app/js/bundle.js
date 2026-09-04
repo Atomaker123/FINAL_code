@@ -52307,11 +52307,7 @@ fadeInApp.setConfig({
     duration: 2500,
     step: state => (frame.style.opacity = state.opacity)
 });
-if (ismobilejs_1.default(window.navigator).phone) {
-    alert('This version of Scale of the Universe 2 is not designed for phones. Please find the app on the iOS app store.');
-    document.write('Download the Scale of the Universe iOS app!');
-}
-;
+
 const frame = document.getElementById("frame");
 const sotuFrame = document.getElementById("sotu");
 const langWrapper = document.getElementById("langWrapper");

@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Atomaker - Visualizing the Invisible</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Playpen+Sans:wght@700&display=swap" rel="stylesheet">
@@ -153,9 +154,52 @@
     }
 
     @media (max-width: 768px) {
-      .container { flex-direction: column; align-items: center; }
-      .left-section, .right-section { max-width: 90%; margin-right: 0; margin-bottom: 50px; }
-      .image-box { width: 100%; height: auto; }
+      header {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+        padding: 12px 15px;
+      }
+      nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px 16px;
+      }
+      nav a {
+        margin: 0 4px;
+        font-size: 15px;
+      }
+      .container {
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 15px;
+      }
+      .left-section, .right-section {
+        max-width: 100%;
+        width: 100%;
+        margin-right: 0;
+        margin-bottom: 30px;
+      }
+      .image-box {
+        width: 100%;
+        max-width: 380px;
+        height: 220px;
+      }
+      .box {
+        padding: 14px;
+      }
+      .box img {
+        width: 50px;
+        margin-right: 14px;
+      }
+      .box-content h3 {
+        font-size: 18px;
+      }
+      .box-content ul {
+        font-size: 14px;
+        padding-left: 16px;
+      }
     }
   </style>
 </head>
