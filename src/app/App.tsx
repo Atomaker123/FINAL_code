@@ -176,8 +176,8 @@ export default function App() {
   
   const [dark, setDark] = useState(true);
   const [highQuality, setHighQuality] = useState(false); // toggle for visual fidelity
-  const [sideOpen, setSideOpen] = useState(() => typeof window !== "undefined" ? window.innerWidth > 768 : true);
-  const [infoOpen, setInfoOpen] = useState(() => typeof window !== "undefined" ? window.innerWidth > 768 : false);
+  const [sideOpen, setSideOpen] = useState(true);
+  const [infoOpen, setInfoOpen] = useState(true);
   const [decayMsg, setDecayMsg] = useState<string|null>(null);
   const [isDecaying, setIsDecaying] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -284,14 +284,12 @@ export default function App() {
     if (decayTimerRef.current) clearInterval(decayTimerRef.current);
     if (activeDecayTimerRef.current) clearInterval(activeDecayTimerRef.current);
     setProtons(0);
-    setNeuttons(0);
+    setNeutrons(0);
     setElectrons(0);
     setDecayMsg(null);
     setIsDecaying(false);
     setCountdown(0);
   };
-
-  const setNeuttons = (n: number) => setNeutrons(n);
 
   const localInfo = protons > 0 ? getLocalInfo(protons, neutrons) : null;
   const elem = localInfo?.elem;
@@ -304,25 +302,90 @@ export default function App() {
   const divider = dark ? "border-slate-800" : "border-slate-200";
   const stabColor = isBlackHole ? "text-purple-400" : isStable ? "text-emerald-400" : "text-amber-400";
 
+  // Reusable Controls Content
+  const controlsContent = (
+    <div className="p-3 space-y-3">
+      <p className={`text-xs uppercase tracking-widest font-bold ${textMuted}`}>Controls</p>
+      <ParticleRow label="Protons" color="#ff3333" dark={dark} onAdd={n => setProtons(p => !isBlackHole ? p + n : p)} onRemove={n => setProtons(p => Math.max(0, p - n))} />
+      <ParticleRow label="Electrons" color="#44aaff" dark={dark} onAdd={n => setElectrons(e => !isBlackHole ? e + n : e)} onRemove={n => setElectrons(e => Math.max(0, e - n))} />
+      <ParticleRow label="Neutrons" color="#ffcc00" dark={dark} onAdd={n => setNeutrons(nn => !isBlackHole ? nn + n : nn)} onRemove={n => setNeutrons(nn => Math.max(0, nn - n))} />
+      <div className={`pt-2 border-t ${divider} text-xs space-y-0.5 ${textMuted}`}>
+        <div className="flex justify-between md:block"><span>Protons:</span> <span className="text-red-400 font-bold">{protons}</span></div>
+        <div className="flex justify-between md:block"><span>Neutrons:</span> <span className="text-yellow-400 font-bold">{neutrons}</span></div>
+        <div className="flex justify-between md:block"><span>Electrons:</span> <span className="text-blue-400 font-bold">{electrons}</span></div>
+        {(protons + neutrons) > 0 && <div className="flex justify-between md:block"><span>Mass #:</span> <span className={`font-bold ${textMain}`}>{protons + neutrons}</span></div>}
+      </div>
+      <button onClick={handleReset} className="w-full py-2 rounded bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold uppercase tracking-widest transition-colors">Reset</button>
+      <div className={`pt-2 border-t ${divider} text-xs ${textMuted} space-y-0.5 hidden md:block`}>
+        <div className="font-semibold mb-1">Stability rules</div>
+        <div>|p − n| ≤ 2 → nuclear</div>
+        <div>|p − e| ≤ 5 → charge</div>
+        <div className="text-purple-400">|n − p| ≥ 150 → Black Hole</div>
+      </div>
+    </div>
+  );
+
+  // Reusable Info Content
+  const infoContent = (
+    <div className="p-4 space-y-3 text-xs">
+      <p className={`uppercase tracking-widest font-bold ${textMuted}`}>Element Info</p>
+      {!elem ? (
+        <p className={textMuted}>Add protons to identify an element.</p>
+      ) : (
+        <>
+          <div className="flex items-baseline gap-2">
+            <span className={`text-4xl font-black ${dark ? "text-slate-600" : "text-slate-200"}`}>{elem.symbol}</span>
+            <div>
+              <div className={`text-lg font-black ${textMain}`}>{elem.name}</div>
+              <div className={`${stabColor} font-semibold`}>{isBlackHole ? "Singularity" : isStable ? "● Stable" : "● Unstable"}</div>
+            </div>
+          </div>
+          <div className={`grid grid-cols-2 gap-x-2 gap-y-0.5 ${textMuted} border-t ${divider} pt-3`}>
+            <InfoRow label="Atomic #" value={String(protons)} />
+            <InfoRow label="Mass #" value={String(protons + neutrons)} />
+            <InfoRow label="Protons" value={String(protons)} />
+            <InfoRow label="Neutrons" value={String(neutrons)} />
+            <InfoRow label="Electrons" value={String(electrons)} />
+          </div>
+          {iso && (
+            <Section title="Isotope" divider={divider} textMain={textMain} textMuted={textMuted}>
+              <p className="font-semibold">{iso.name}</p>
+              {iso.info && <p>{iso.info}</p>}
+              {iso.uses && <p><span className="opacity-60">Uses: </span>{iso.uses}</p>}
+              {iso.natural_occurrence && <p><span className="opacity-60">Occurrence: </span>{iso.natural_occurrence}</p>}
+            </Section>
+          )}
+          {elem.description && <Section title="Description" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.description}</p></Section>}
+          {elem.uses && <Section title="Uses" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.uses}</p></Section>}
+          {elem.natural_occurrence && <Section title="Natural Occurrence" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.natural_occurrence}</p></Section>}
+          {elem.history && <Section title="History" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.history}</p></Section>}
+          <Section title="Electron Config" divider={divider} textMain={textMain} textMuted={textMuted}><OrbitalBadges electrons={electrons} /></Section>
+        </>
+      )}
+    </div>
+  );
+
   return (
-    <div className={`w-full h-full flex flex-col overflow-hidden ${bg} transition-colors duration-300`}>
-      <div className={`flex items-center px-2 sm:px-3 py-2 border-b ${divider} ${dark ? "bg-[#0a1018]" : "bg-white"} gap-1 sm:gap-2 shrink-0 z-20 relative`}>
-        <button onClick={() => setSideOpen(v => !v)} className={`p-1.5 rounded text-sm sm:text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`} title="Controls panel">☰</button>
-        <div className="flex-1 flex items-center justify-center gap-1.5 sm:gap-3 min-w-0 overflow-hidden">
-          {elem && <span className={`text-xl sm:text-2xl font-black shrink-0 ${dark ? "text-slate-500" : "text-slate-300"}`}>{elem.symbol}</span>}
-          <span className={`font-bold tracking-wide text-xs sm:text-base truncate ${textMain} ${isBlackHole ? "text-purple-400 animate-pulse" : ""}`}>{atomName}</span>
-          {protons > 0 && <span className={`text-[10px] sm:text-xs font-semibold shrink-0 ${stabColor}`}>● {isStable ? "Stable" : "Unstable"}</span>}
-          <button onClick={() => setHighQuality(v => !v)} className={`ml-1 sm:ml-2 px-1.5 py-1 sm:p-1.5 rounded text-[10px] sm:text-sm shrink-0 ${dark ? "bg-slate-700 hover:bg-slate-600" : "bg-slate-300 hover:bg-slate-200"} ${textMain}`} title="Toggle high‑quality rendering">
+    <div className={`w-full h-full flex flex-col ${bg} transition-colors duration-300 md:overflow-hidden overflow-y-auto`}>
+      {/* Top Header Bar */}
+      <div className={`flex items-center px-3 py-2 border-b ${divider} ${dark ? "bg-[#0a1018]" : "bg-white"} gap-2 shrink-0 z-10 sticky top-0 md:relative`}>
+        <button onClick={() => setSideOpen(v => !v)} className={`hidden md:block p-1.5 rounded text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`} title="Toggle Controls">☰</button>
+        <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 min-w-0">
+          {elem && <span className={`text-xl sm:text-2xl font-black ${dark ? "text-slate-500" : "text-slate-300"}`}>{elem.symbol}</span>}
+          <span className={`font-bold tracking-wide text-sm sm:text-base truncate ${textMain} ${isBlackHole ? "text-purple-400 animate-pulse" : ""}`}>{atomName}</span>
+          {protons > 0 && <span className={`text-[11px] sm:text-xs font-semibold shrink-0 ${stabColor}`}>● {isStable ? "Stable" : "Unstable"}</span>}
+          <button onClick={() => setHighQuality(v => !v)} className={`ml-1 sm:ml-2 px-2 py-1 rounded text-xs shrink-0 ${dark ? "bg-slate-700 hover:bg-slate-600" : "bg-slate-300 hover:bg-slate-200"} ${textMain}`} title="Toggle high‑quality rendering">
             {highQuality ? "HQ" : "LQ"}
           </button>
         </div>
-        <button onClick={() => setInfoOpen(v => !v)} className={`p-1.5 rounded text-sm sm:text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`} title="Element information">ℹ</button>
-        <button onClick={() => setDark(v => !v)} className={`p-1.5 rounded text-sm sm:text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`}>{dark ? "☀" : "☾"}</button>
+        <button onClick={() => setInfoOpen(v => !v)} className={`hidden md:block p-1.5 rounded text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`} title="Toggle Element Info">ℹ</button>
+        <button onClick={() => setDark(v => !v)} className={`p-1.5 rounded text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`}>{dark ? "☀" : "☾"}</button>
       </div>
 
+      {/* Decay Alert Message */}
       <AnimatePresence>
         {decayMsg && (
-          <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="shrink-0 overflow-hidden z-20 relative">
+          <motion.div initial={{height:0,opacity:0}} animate={{height:"auto",opacity:1}} exit={{height:0,opacity:0}} className="shrink-0 overflow-hidden z-10 relative">
             <div className={`text-xs text-center py-1.5 px-2 font-medium transition-colors ${
               isDecaying 
                 ? "bg-red-900/90 text-red-100 animate-pulse font-bold" 
@@ -336,31 +399,49 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 overflow-hidden relative">
+      {/* ─── MOBILE VERTICAL LAYOUT (md:hidden) ─── */}
+      <div className="flex flex-col md:hidden w-full pb-8">
+        {/* 1. TOP: Particle Adding Controls */}
+        <div className={`w-full border-b ${divider} ${panelBg}`}>
+          {controlsContent}
+        </div>
+
+        {/* 2. MIDDLE: 3D Atom Display */}
+        <div className="w-full h-[360px] relative bg-black shrink-0 border-b border-slate-800">
+          <Canvas camera={{ position: [0, 0, 8], fov: 55 }} gl={{ antialias: true }} dpr={highQuality ? [1, 2] : [1, 1.5]}>
+            <color attach="background" args={[dark ? '#080c12' : '#f8fafc']} />
+            {dark && <Stars radius={100} depth={50} count={highQuality ? 1500 : 800} factor={4} saturation={0} fade speed={1} />}
+            <ambientLight intensity={Math.PI / 2} />
+            <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
+            <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
+            <Atom3D protons={protons} neutrons={neutrons} electrons={Math.min(electrons, 200)} isBlackHole={isBlackHole} highQuality={highQuality} />
+            <OrbitControls makeDefault minDistance={2} maxDistance={30} />
+          </Canvas>
+
+          {isBlackHole && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+              <div className="text-center px-4">
+                <div className="text-purple-400 text-2xl font-black tracking-widest animate-pulse">BLACK HOLE</div>
+                <div className="text-purple-600 text-xs mt-1">Extreme particle imbalance — reset to continue</div>
+              </div>
+            </div>
+          )}
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-slate-500 pointer-events-none select-none z-10 bg-black/40 px-2 py-0.5 rounded whitespace-nowrap">drag to rotate · pinch to zoom</div>
+        </div>
+
+        {/* 3. BOTTOM: Element Info */}
+        <div className={`w-full ${panelBg}`}>
+          {infoContent}
+        </div>
+      </div>
+
+      {/* ─── DESKTOP / LAPTOP LAYOUT (hidden md:flex) ─── */}
+      <div className="hidden md:flex flex-1 overflow-hidden relative">
         <AnimatePresence initial={false}>
           {sideOpen && (
-            <motion.aside initial={{x:-220,opacity:0}} animate={{x:0,opacity:1}} exit={{x:-220,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-r ${panelBg} flex flex-col z-30 absolute md:relative top-0 bottom-0 left-0 w-[220px] shadow-2xl md:shadow-none`}>
-              <div className="p-3 space-y-4 overflow-y-auto flex-1">
-                <div className="flex items-center justify-between">
-                  <p className={`text-xs uppercase tracking-widest font-bold ${textMuted}`}>Controls</p>
-                  <button onClick={() => setSideOpen(false)} className={`md:hidden text-xs px-2 py-1 rounded ${dark ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-200 text-slate-600"}`}>✕</button>
-                </div>
-                <ParticleRow label="Protons" color="#ff3333" dark={dark} onAdd={n => setProtons(p => !isBlackHole ? p + n : p)} onRemove={n => setProtons(p => Math.max(0, p - n))} />
-                <ParticleRow label="Electrons" color="#44aaff" dark={dark} onAdd={n => setElectrons(e => !isBlackHole ? e + n : e)} onRemove={n => setElectrons(e => Math.max(0, e - n))} />
-                <ParticleRow label="Neutrons" color="#ffcc00" dark={dark} onAdd={n => setNeutrons(nn => !isBlackHole ? nn + n : nn)} onRemove={n => setNeutrons(nn => Math.max(0, nn - n))} />
-                <div className={`pt-2 border-t ${divider} text-xs space-y-0.5 ${textMuted}`}>
-                  <div>Protons: <span className="text-red-400 font-bold">{protons}</span></div>
-                  <div>Neutrons: <span className="text-yellow-400 font-bold">{neutrons}</span></div>
-                  <div>Electrons: <span className="text-blue-400 font-bold">{electrons}</span></div>
-                  {(protons + neutrons) > 0 && <div>Mass #: <span className={`font-bold ${textMain}`}>{protons + neutrons}</span></div>}
-                </div>
-                <button onClick={handleReset} className="w-full py-2 rounded bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold uppercase tracking-widest transition-colors">Reset</button>
-                <div className={`pt-2 border-t ${divider} text-xs ${textMuted} space-y-0.5`}>
-                  <div className="font-semibold mb-1">Stability rules</div>
-                  <div>|p − n| ≤ 2 → nuclear</div>
-                  <div>|p − e| ≤ 5 → charge</div>
-                  <div className="text-purple-400">|n − p| ≥ 150 → Black Hole</div>
-                </div>
+            <motion.aside initial={{width:0,opacity:0}} animate={{width:210,opacity:1}} exit={{width:0,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-r ${panelBg} flex flex-col z-10 relative`}>
+              <div className="overflow-y-auto flex-1">
+                {controlsContent}
               </div>
             </motion.aside>
           )}
@@ -379,56 +460,20 @@ export default function App() {
 
           {isBlackHole && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
-              <div className="text-center px-4">
-                <div className="text-purple-400 text-2xl sm:text-3xl font-black tracking-widest animate-pulse">BLACK HOLE</div>
+              <div className="text-center">
+                <div className="text-purple-400 text-3xl font-black tracking-widest animate-pulse">BLACK HOLE</div>
                 <div className="text-purple-600 text-xs mt-1">Extreme particle imbalance — reset to continue</div>
               </div>
             </div>
           )}
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] sm:text-xs text-slate-500 pointer-events-none select-none z-10 bg-black/40 px-2 py-1 rounded text-center whitespace-nowrap">drag to rotate · pinch/scroll to zoom</div>
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 text-xs text-slate-500 pointer-events-none select-none z-10 bg-black/40 px-2 py-1 rounded">drag to rotate · scroll to zoom</div>
         </div>
 
         <AnimatePresence initial={false}>
           {infoOpen && (
-            <motion.aside initial={{x:280,opacity:0}} animate={{x:0,opacity:1}} exit={{x:280,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-l ${panelBg} flex flex-col z-30 absolute md:relative top-0 bottom-0 right-0 w-[270px] sm:w-[280px] shadow-2xl md:shadow-none`}>
-              <div className="p-4 space-y-3 overflow-y-auto flex-1 text-xs">
-                <div className="flex items-center justify-between">
-                  <p className={`uppercase tracking-widest font-bold ${textMuted}`}>Element Info</p>
-                  <button onClick={() => setInfoOpen(false)} className={`md:hidden text-xs px-2 py-1 rounded ${dark ? "hover:bg-slate-800 text-slate-400" : "hover:bg-slate-200 text-slate-600"}`}>✕</button>
-                </div>
-                {!elem ? (
-                  <p className={textMuted}>Add protons to identify an element.</p>
-                ) : (
-                  <>
-                    <div className="flex items-baseline gap-2">
-                      <span className={`text-4xl font-black ${dark ? "text-slate-600" : "text-slate-200"}`}>{elem.symbol}</span>
-                      <div>
-                        <div className={`text-lg font-black ${textMain}`}>{elem.name}</div>
-                        <div className={`${stabColor} font-semibold`}>{isBlackHole ? "Singularity" : isStable ? "● Stable" : "● Unstable"}</div>
-                      </div>
-                    </div>
-                    <div className={`grid grid-cols-2 gap-x-2 gap-y-0.5 ${textMuted} border-t ${divider} pt-3`}>
-                      <InfoRow label="Atomic #" value={String(protons)} />
-                      <InfoRow label="Mass #" value={String(protons + neutrons)} />
-                      <InfoRow label="Protons" value={String(protons)} />
-                      <InfoRow label="Neutrons" value={String(neutrons)} />
-                      <InfoRow label="Electrons" value={String(electrons)} />
-                    </div>
-                    {iso && (
-                      <Section title="Isotope" divider={divider} textMain={textMain} textMuted={textMuted}>
-                        <p className="font-semibold">{iso.name}</p>
-                        {iso.info && <p>{iso.info}</p>}
-                        {iso.uses && <p><span className="opacity-60">Uses: </span>{iso.uses}</p>}
-                        {iso.natural_occurrence && <p><span className="opacity-60">Occurrence: </span>{iso.natural_occurrence}</p>}
-                      </Section>
-                    )}
-                    {elem.description && <Section title="Description" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.description}</p></Section>}
-                    {elem.uses && <Section title="Uses" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.uses}</p></Section>}
-                    {elem.natural_occurrence && <Section title="Natural Occurrence" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.natural_occurrence}</p></Section>}
-                    {elem.history && <Section title="History" divider={divider} textMain={textMain} textMuted={textMuted}><p>{elem.history}</p></Section>}
-                    <Section title="Electron Config" divider={divider} textMain={textMain} textMuted={textMuted}><OrbitalBadges electrons={electrons} /></Section>
-                  </>
-                )}
+            <motion.aside initial={{width:0,opacity:0}} animate={{width:264,opacity:1}} exit={{width:0,opacity:0}} transition={{duration:0.22,ease:"easeInOut"}} className={`overflow-hidden shrink-0 border-l ${panelBg} flex flex-col z-10 relative`}>
+              <div className="overflow-y-auto flex-1">
+                {infoContent}
               </div>
             </motion.aside>
           )}
