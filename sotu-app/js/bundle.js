@@ -52044,11 +52044,12 @@ const PIXI = require("pixi.js-legacy");
 const descriptionSplitter_1 = require("../helpers/descriptionSplitter");
 const powToUnit_1 = require("../helpers/powToUnit");
 function getGraphics(visualLocation, textDatum, extraText, units, sizeData) {
-    const w = 450;
+    const isMobile = window.innerWidth <= 768;
+    const w = isMobile ? Math.min(320, window.innerWidth - 30) : 450;
     const h = 500;
-    const x = visualLocation.descriptionX;
-    const y = visualLocation.descriptionY;
-    const margin = 20;
+    const x = isMobile ? 0 : visualLocation.descriptionX;
+    const y = isMobile ? 0 : visualLocation.descriptionY;
+    const margin = isMobile ? 12 : 20;
     const baseStyle = {
         fontFamily: 'Roboto',
         align: 'left',
@@ -52056,54 +52057,61 @@ function getGraphics(visualLocation, textDatum, extraText, units, sizeData) {
         wordWrapWidth: w - (margin * 2),
         wordWrap: true
     };
-    const titleStyle = Object.assign({ fontSize: 40 }, baseStyle);
-    const scaleStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: 32, fill: 0x333333 });
-    const unitFriendlyStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: 32, wordWrapWidth: 500, fill: 0x333333, wordWrap: false });
-    const exponentStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: scaleStyle.fontSize - 8, fill: 0x333333 });
-    const descriptionStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: 32 });
+    const titleStyle = Object.assign({ fontSize: isMobile ? 22 : 40 }, baseStyle);
+    const scaleStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 16 : 32, fill: 0x333333 });
+    const unitFriendlyStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 16 : 32, wordWrapWidth: w - (margin * 2), fill: 0x333333, wordWrap: false });
+    const exponentStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: (isMobile ? 16 : scaleStyle.fontSize) - (isMobile ? 5 : 8), fill: 0x333333 });
+    const descriptionStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 16 : 32 });
     const friendly = powToUnit_1.powToUnit(sizeData, units, extraText);
     const splitDescription = descriptionSplitter_1.descriptionSplitter(textDatum.description).replace(/",/g, '');
     const titleText = new PIXI.Text(textDatum.title.replace(/\r?\n|\r/g, ''), titleStyle);
-    const scaleText = new PIXI.Text(`${sizeData.coeff} x 10`, scaleStyle);
-    const exponentText = new PIXI.Text(`${sizeData.exponent}`, exponentStyle);
+    const scaleText = new PIXI.Text(sizeData.coeff + " x 10", scaleStyle);
+    const exponentText = new PIXI.Text("" + sizeData.exponent, exponentStyle);
     const meterText = new PIXI.Text(textDatum.metersPlural, scaleStyle);
     const unitFriendlyText = new PIXI.Text(friendly, unitFriendlyStyle);
     const descriptionText = new PIXI.Text('    ' + splitDescription, descriptionStyle);
+    
     titleText.x = x + margin;
     titleText.y = y + margin;
     titleText.roundPixels = true;
-    scaleText.x = x + margin;
-    scaleText.y = y + titleText.height + unitFriendlyText.height - 5 + 35;
-    scaleText.roundPixels = true;
-    exponentText.x = x + margin + 2.5 + scaleText.width;
-    exponentText.y = y + titleText.height + unitFriendlyText.height - 12 + 35;
-    exponentText.roundPixels = true;
-    meterText.x = x + margin + 2.5 + scaleText.width + exponentText.width + 5;
-    meterText.y = y + titleText.height + unitFriendlyText.height - 5 + 35;
-    meterText.roundPixels = true;
+    
     unitFriendlyText.x = x + margin;
-    unitFriendlyText.y = y + titleText.height - 10 + 35;
+    unitFriendlyText.y = y + titleText.height + (isMobile ? 6 : 25);
     unitFriendlyText.roundPixels = true;
+
+    scaleText.x = x + margin;
+    scaleText.y = unitFriendlyText.y + unitFriendlyText.height + (isMobile ? 4 : 5);
+    scaleText.roundPixels = true;
+
+    exponentText.x = x + margin + 2.5 + scaleText.width;
+    exponentText.y = scaleText.y - (isMobile ? 5 : 7);
+    exponentText.roundPixels = true;
+
+    meterText.x = exponentText.x + exponentText.width + 5;
+    meterText.y = scaleText.y;
+    meterText.roundPixels = true;
+
     descriptionText.x = x + margin;
-    descriptionText.y = y + titleText.height + scaleText.height + unitFriendlyText.height + 10 + 35;
+    descriptionText.y = scaleText.y + scaleText.height + (isMobile ? 8 : 10);
     descriptionText.roundPixels = true;
+
     const descriptionContainer = new PIXI.Container();
     const graphics = new PIXI.Graphics();
-    const totalTextHeight = titleText.height + descriptionText.height + scaleText.height + unitFriendlyText.height + 60;
+    const totalTextHeight = descriptionText.y + descriptionText.height - y + margin;
     graphics.beginFill(0x000000, .2);
     graphics.drawRoundedRect(x + 5, y + 5, w, totalTextHeight, 15);
     graphics.endFill();
     graphics.lineStyle(2, 0xaaaaaa, 1);
     graphics.beginFill(0xFFFFFF, 1);
     let widthToUse = w;
-    if (unitFriendlyText.width + 30 >= widthToUse) {
-        widthToUse = unitFriendlyText.width + 40;
+    if (unitFriendlyText.width + (margin * 2) >= widthToUse) {
+        widthToUse = unitFriendlyText.width + (margin * 2);
     }
     graphics.drawRoundedRect(x, y, widthToUse, totalTextHeight, 15);
     graphics.endFill();
-    graphics.alpha = .9;
-    descriptionContainer.x -= w / 2;
-    descriptionContainer.y -= h / 2;
+    graphics.alpha = .95;
+    descriptionContainer.x -= widthToUse / 2;
+    descriptionContainer.y -= isMobile ? (totalTextHeight / 2) : (h / 2);
     descriptionContainer.addChild(graphics);
     descriptionContainer.addChild(titleText, descriptionText, scaleText, exponentText, meterText, unitFriendlyText);
     return descriptionContainer;
