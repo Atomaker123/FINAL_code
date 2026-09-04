@@ -2,3 +2,6 @@ node_modules
 dist
 dist-atom
 dist-site
+.venv
+.DS_Store
+Thumbs.db

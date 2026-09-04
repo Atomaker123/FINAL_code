@@ -116,5 +116,293 @@
   "115": {"name": "Moscovium", "symbol": "Mc", "description": "Transactinide; radioactive; extremely rare.", "uses": "Research (only).", "natural_occurrence": "Produced only in particle accelerators.", "history": "Synthesized in 2003; named after Moscow.", "isotopes": {}},
   "116": {"name": "Livermorium", "symbol": "Lv", "description": "Transactinide; radioactive; extremely rare.", "uses": "Research (only).", "natural_occurrence": "Produced only in particle accelerators.", "history": "Synthesized in 2000; named after Livermore, California.", "isotopes": {}},
   "117": {"name": "Tennessine", "symbol": "Ts", "description": "Halogen; radioactive; extremely rare.", "uses": "Research (only).", "natural_occurrence": "Produced only in particle accelerators.", "history": "Synthesized in 2010; named after Tennessee.", "isotopes": {}},
-  "118": {"name": "Oganesson", "symbol": "Og", "description": "Noble gas; radioactive; extremely rare; superheavy element.", "uses": "Research (only).", "natural_occurrence": "Produced only in particle accelerators.", "history": "Synthesized in 2006; newest element; named after Yuri Oganessian.", "isotopes": {}}
+  "118": {"name": "Oganesson", "symbol": "Og", "description": "Noble gas; radioactive; extremely rare; superheavy element.", "uses": "Research (only).", "natural_occurrence": "Produced only in particle accelerators.", "history": "Synthesized in 2006; newest element; named after Yuri Oganessian.", "isotopes": {}},
+  "119": {
+    "name": "Ununennium",
+    "symbol": "Uue",
+    "description": "Hypothetical alkali metal; superheavy element; expected to be highly radioactive.",
+    "uses": "Research (if synthesized).",
+    "natural_occurrence": "Not known to occur naturally; has not yet been confirmed.",
+    "history": "Predicted as the next element after Oganesson; not yet officially discovered or named by IUPAC.",
+    "isotopes": {}
+  },
+  "120": {
+      "name": "Unbinilium",
+      "symbol": "Ubn",
+      "description": "Hypothetical alkaline earth metal; superheavy element; expected to be highly radioactive.",
+      "uses": "Research (if synthesized).",
+      "natural_occurrence": "Not known to occur naturally; has not yet been confirmed.",
+      "history": "Predicted as element 120; currently undiscovered and without an official permanent name.",
+      "isotopes": {}
+  },
+  "121": {
+      "name": "Unbiunium",
+      "symbol": "Ubu",
+      "description": "Hypothetical superheavy element; expected to begin a new region of the extended periodic table.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Systematic temporary name assigned according to IUPAC naming conventions; undiscovered.",
+      "isotopes": {}
+  },
+  "122": {
+      "name": "Unbibium",
+      "symbol": "Ubb",
+      "description": "Hypothetical superheavy element; expected to be radioactive and extremely unstable.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name for the undiscovered element with atomic number 122.",
+      "isotopes": {}
+  },
+  "123": {
+      "name": "Unbitrium",
+      "symbol": "Ubt",
+      "description": "Hypothetical superheavy element; predicted to have unusual electron configurations.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name based on IUPAC conventions; not yet synthesized.",
+      "isotopes": {}
+  },
+  "124": {
+      "name": "Unbiquadium",
+      "symbol": "Ubq",
+      "description": "Hypothetical superheavy element; expected to be radioactive and short-lived.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name for element 124; currently hypothetical.",
+      "isotopes": {}
+  },
+  "125": {
+      "name": "Unbipentium",
+      "symbol": "Ubp",
+      "description": "Hypothetical superheavy element; properties predicted primarily through theoretical models.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name; no confirmed synthesis as of now.",
+      "isotopes": {}
+  },
+  "126": {
+      "name": "Unbihexium",
+      "symbol": "Ubh",
+      "description": "Hypothetical superheavy element; may lie near a predicted island of stability.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Of particular theoretical interest because of predictions involving nuclear stability in superheavy elements.",
+      "isotopes": {}
+  },
+  "127": {
+      "name": "Unbiseptium",
+      "symbol": "Ubs",
+      "description": "Hypothetical superheavy element; expected to be radioactive.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name for the undiscovered element 127.",
+      "isotopes": {}
+  },
+  "128": {
+      "name": "Unbioctium",
+      "symbol": "Ubo",
+      "description": "Hypothetical superheavy element with unknown physical and chemical properties.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary IUPAC-style systematic name; has not been synthesized.",
+      "isotopes": {}
+  },
+  "129": {
+      "name": "Unbiennium",
+      "symbol": "Ube",
+      "description": "Hypothetical superheavy element; expected to be highly radioactive.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name for element 129.",
+      "isotopes": {}
+  },
+  "130": {
+      "name": "Untrinilium",
+      "symbol": "Utn",
+      "description": "Hypothetical superheavy element beyond the currently known periodic table.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name based on its atomic number; undiscovered.",
+      "isotopes": {}
+  },
+  "131": {
+    "name": "Untriunium",
+    "symbol": "Utu",
+    "description": "Hypothetical superheavy element; expected to be highly radioactive and unstable.",
+    "uses": "Research (theoretical/experimental only).",
+    "natural_occurrence": "Not known to occur naturally.",
+    "history": "Temporary systematic name based on IUPAC naming conventions; not yet discovered.",
+    "isotopes": {}
+  },
+  "132": {
+      "name": "Untribium",
+      "symbol": "Utb",
+      "description": "Hypothetical superheavy element with unknown chemical and physical properties.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name for the undiscovered element with atomic number 132.",
+      "isotopes": {}
+  },
+  "133": {
+      "name": "Untritrium",
+      "symbol": "Utt",
+      "description": "Hypothetical superheavy element; predicted properties are based entirely on theoretical models.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Not yet synthesized; temporary systematic name assigned according to atomic number.",
+      "isotopes": {}
+  },
+  "134": {
+      "name": "Untriquadium",
+      "symbol": "Utq",
+      "description": "Hypothetical superheavy element; expected to be radioactive and extremely rare if synthesized.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Currently undiscovered and represented by a systematic temporary name.",
+      "isotopes": {}
+  },
+  "135": {
+      "name": "Untripentium",
+      "symbol": "Utp",
+      "description": "Hypothetical superheavy element with potentially unusual nuclear properties.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name; no confirmed isotope has been produced.",
+      "isotopes": {}
+  },
+  "136": {
+      "name": "Untrihexium",
+      "symbol": "Uth",
+      "description": "Hypothetical superheavy element; expected to be highly radioactive.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Predicted element beyond the currently confirmed periodic table.",
+      "isotopes": {}
+  },
+  "137": {
+      "name": "Untriseptium",
+      "symbol": "Uts",
+      "description": "Hypothetical superheavy element with unknown stability and chemical behavior.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary IUPAC systematic name for atomic number 137.",
+      "isotopes": {}
+  },
+  "138": {
+      "name": "Untrioctium",
+      "symbol": "Uto",
+      "description": "Hypothetical superheavy element; expected to have an extremely short half-life.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Has not been synthesized; properties remain theoretical.",
+      "isotopes": {}
+  },
+  "139": {
+      "name": "Untriennium",
+      "symbol": "Ute",
+      "description": "Hypothetical superheavy element beyond the currently known elements.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name based on IUPAC numerical naming rules.",
+      "isotopes": {}
+  },
+  "140": {
+      "name": "Unquadnilium",
+      "symbol": "Uqn",
+      "description": "Hypothetical superheavy element; expected to be radioactive and unstable.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name for element 140; currently undiscovered.",
+      "isotopes": {}
+  },
+  "141": {
+      "name": "Unquadunium",
+      "symbol": "Uqu",
+      "description": "Hypothetical superheavy element with properties predicted through advanced theoretical models.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "No confirmed synthesis; systematic placeholder name.",
+      "isotopes": {}
+  },
+  "142": {
+      "name": "Unquadbium",
+      "symbol": "Uqb",
+      "description": "Hypothetical superheavy element; expected to have unusual electron configurations.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Currently theoretical and unnamed permanently.",
+      "isotopes": {}
+  },
+  "143": {
+      "name": "Unquadtrium",
+      "symbol": "Uqt",
+      "description": "Hypothetical superheavy element; potentially part of an extended periodic table.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name derived from atomic number 143.",
+      "isotopes": {}
+  },
+  "144": {
+      "name": "Unquadquadium",
+      "symbol": "Uqq",
+      "description": "Hypothetical superheavy element; expected to be radioactive.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Not yet synthesized or officially recognized.",
+      "isotopes": {}
+  },
+  "145": {
+      "name": "Unquadpentium",
+      "symbol": "Uqp",
+      "description": "Hypothetical superheavy element with unknown nuclear stability.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic designation for atomic number 145.",
+      "isotopes": {}
+  },
+  "146": {
+      "name": "Unquadhexium",
+      "symbol": "Uqh",
+      "description": "Hypothetical superheavy element; predicted to exist only briefly if synthesized.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Theoretical element beyond the confirmed periodic table.",
+      "isotopes": {}
+  },
+  "147": {
+      "name": "Unquadseptium",
+      "symbol": "Uqs",
+      "description": "Hypothetical superheavy element; expected to be highly unstable and radioactive.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name according to IUPAC conventions.",
+      "isotopes": {}
+  },
+  "148": {
+      "name": "Unquadoctium",
+      "symbol": "Uqo",
+      "description": "Hypothetical superheavy element with entirely theoretical physical properties.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "No confirmed discovery or synthesis has been reported.",
+      "isotopes": {}
+  },
+  "149": {
+      "name": "Unquadennium",
+      "symbol": "Uqe",
+      "description": "Hypothetical superheavy element; likely radioactive with a short half-life.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name for element 149.",
+      "isotopes": {}
+  },
+  "150": {
+      "name": "Unpentnilium",
+      "symbol": "Upn",
+      "description": "Hypothetical superheavy element beyond all currently confirmed elements.",
+      "uses": "Research (theoretical/experimental only).",
+      "natural_occurrence": "Not known to occur naturally.",
+      "history": "Temporary systematic name based on IUPAC naming conventions; currently undiscovered.",
+      "isotopes": {}
+  }
 }
