@@ -105,23 +105,52 @@
 
     <header>
         <div class="logo-title">
-            <img src="atomaker-logo.png" alt="Atomaker Logo" style="height:40px;">
+            <img src="/atomaker-logo.png" alt="Atomaker Logo" style="height:40px;">
             <div>
                 <h1>Atomaker</h1>
                 <h2>Visualizing the Invisible</h2>
             </div>
         </div>
         <nav>
-            <a href="homepage.html">Home</a>
-            <a href="aboutus.html">About Us</a>
-            <a href="ourmission.html">Our Mission</a>
-            <a href="layout.html">Layout</a>
+            <a href="/homepage.html">Home</a>
+            <a href="/aboutus.html">About Us</a>
+            <a href="/ourmission.html">Our Mission</a>
+            <a href="/layout.html">Layout</a>
         </nav>
     </header>
 
     <div class="atom-container">
-        <iframe src="/atom/" title="Build Your Own Atom" allowfullscreen></iframe>
+        <iframe id="atomFrame" src="/atom/" title="Build Your Own Atom" allowfullscreen></iframe>
     </div>
 
+    <script>
+        // Forward extra subpath/query/hash (e.g. /buildyourownatom.html/carbon or /buildyourownatom.html?element=carbon or #carbon) to iframe
+        (function() {
+            const path = window.location.pathname;
+            const search = window.location.search;
+            const hash = window.location.hash;
+            const iframe = document.getElementById('atomFrame');
+            
+            if (iframe) {
+                // If there's an extra path component after buildyourownatom.html or query/hash
+                let extra = '';
+                const match = path.match(/buildyourownatom\.html\/(.+)/i);
+                if (match && match[1]) {
+                    extra = match[1];
+                } else if (search) {
+                    extra = search;
+                } else if (hash) {
+                    extra = hash;
+                }
+
+                if (extra) {
+                    const cleanExtra = extra.startsWith('/') ? extra.slice(1) : extra;
+                    iframe.src = '/atom/' + cleanExtra;
+                } else {
+                    iframe.src = '/atom/';
+                }
+            }
+        })();
+    </script>
 </body>
 </html>

@@ -72,84 +72,72 @@ function Nucleus({ protons, neutrons }: { protons: number; neutrons: number }) {
   );
 }
 
-// 1. Bohr Model (Concentric 2D quantized K, L, M, N... shells)
-function BohrShell({
-  shellIndex,
+// 1. Bohr Model (Planetary multi-angle circular & gyroscopic orbits)
+function RutherfordElectron({
   radius,
-  count,
+  speed,
+  rotation,
+  offset,
   highQuality
 }: {
-  shellIndex: number;
   radius: number;
-  count: number;
+  speed: number;
+  rotation: [number, number, number];
+  offset: number;
   highQuality: boolean;
 }) {
-  const electronRefs = useRef<THREE.Mesh[]>([]);
-  const speed = 1.6 / Math.sqrt(radius);
+  const meshRef = useRef<THREE.Mesh>(null!);
 
   useFrame(({ clock }) => {
-    const t = clock.getElapsedTime() * speed;
-    for (let i = 0; i < count; i++) {
-      const mesh = electronRefs.current[i];
-      if (mesh) {
-        const angle = t + (i / count) * Math.PI * 2;
-        mesh.position.x = Math.cos(angle) * radius;
-        mesh.position.y = Math.sin(angle) * radius;
-        mesh.position.z = 0;
-      }
+    const t = clock.getElapsedTime() * speed + offset;
+    if (meshRef.current) {
+      meshRef.current.position.x = Math.cos(t) * radius;
+      meshRef.current.position.y = Math.sin(t) * radius;
+      meshRef.current.position.z = 0;
     }
   });
 
-  const shellColors = ['#38bdf8', '#818cf8', '#c084fc', '#f472b6', '#fb7185', '#34d399', '#facc15'];
-  const col = shellColors[shellIndex % shellColors.length];
-
   return (
-    <group>
-      <mesh rotation={[0, 0, 0]}>
-        <ringGeometry args={[radius - 0.012, radius + 0.012, highQuality ? 128 : 64]} />
-        <meshBasicMaterial color={col} side={THREE.DoubleSide} transparent opacity={0.35} />
+    <group rotation={rotation}>
+      <mesh>
+        <ringGeometry args={[radius - 0.01, radius + 0.01, highQuality ? 96 : 48]} />
+        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.18} />
       </mesh>
-      <mesh rotation={[0, 0, 0]}>
-        <ringGeometry args={[radius - 0.04, radius + 0.04, highQuality ? 64 : 32]} />
-        <meshBasicMaterial color={col} side={THREE.DoubleSide} transparent opacity={0.08} />
+      <mesh ref={meshRef}>
+        <sphereGeometry args={[0.075, 16, 16]} />
+        <meshStandardMaterial color="#67e8f9" emissive="#38bdf8" emissiveIntensity={0.9} />
       </mesh>
-      {Array.from({ length: count }).map((_, i) => (
-        <mesh
-          key={i}
-          ref={(el) => { if (el) electronRefs.current[i] = el; }}
-        >
-          <sphereGeometry args={[0.075, highQuality ? 24 : 16, highQuality ? 24 : 16]} />
-          <meshStandardMaterial
-            color="#67e8f9"
-            emissive={col}
-            emissiveIntensity={0.8}
-            roughness={0.2}
-          />
-        </mesh>
-      ))}
     </group>
   );
 }
 
 function BohrModel3D({ protons, neutrons, electrons, highQuality }: { protons: number; neutrons: number; electrons: number; highQuality: boolean }) {
-  const shells = useMemo(() => getBohrShellDistribution(electrons), [electrons]);
-  const groupRef = useRef<THREE.Group>(null!);
-
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.z += delta * 0.05;
+  const electronData = useMemo(() => {
+    const arr = [];
+    const baseRadius = Math.max(1.5, Math.cbrt(protons + neutrons) * 0.18 + 1.2);
+    for (let i = 0; i < electrons; i++) {
+      const radius = baseRadius + (i % 6) * 0.35 + (Math.random() * 0.3);
+      const speed = 1.8 + (Math.random() * 0.8);
+      const euler: [number, number, number] = [
+        (i * 1.1) % (Math.PI * 2),
+        (i * 0.7) % (Math.PI * 2),
+        (i * 1.5) % (Math.PI * 2)
+      ];
+      arr.push({ radius, speed, euler, offset: (i / Math.max(1, electrons)) * Math.PI * 2 });
     }
-  });
+    return arr;
+  }, [electrons, protons, neutrons]);
 
   return (
-    <group ref={groupRef}>
+    <group>
       <Nucleus protons={protons} neutrons={neutrons} />
-      {shells.map((shell) => (
-        <BohrShell
-          key={shell.shellIndex}
-          shellIndex={shell.shellIndex}
-          radius={shell.radius}
-          count={shell.count}
+      {electronData.map((e, i) => (
+        <RutherfordElectron
+          key={i}
+          radius={e.radius}
+          speed={e.speed}
+          rotation={e.euler}
+          offset={e.offset}
           highQuality={highQuality}
         />
       ))}
@@ -273,65 +261,28 @@ function SchrodingerModel3D({
   );
 }
 
-// 3. Rutherford Nuclear Model (Random 3D orbital planes around small dense center)
-function RutherfordElectron({
-  radius,
-  speed,
-  rotation,
-  offset,
-  highQuality
-}: {
-  radius: number;
-  speed: number;
-  rotation: [number, number, number];
-  offset: number;
-  highQuality: boolean;
-}) {
-  const meshRef = useRef<THREE.Mesh>(null!);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime() * speed + offset;
-    if (meshRef.current) {
-      meshRef.current.position.x = Math.cos(t) * radius;
-      meshRef.current.position.y = Math.sin(t) * radius;
-      meshRef.current.position.z = 0;
-    }
-  });
-
-  return (
-    <group rotation={rotation}>
-      <mesh>
-        <ringGeometry args={[radius - 0.01, radius + 0.01, highQuality ? 96 : 48]} />
-        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.18} />
-      </mesh>
-      <mesh ref={meshRef}>
-        <sphereGeometry args={[0.075, 16, 16]} />
-        <meshStandardMaterial color="#67e8f9" emissive="#38bdf8" emissiveIntensity={0.9} />
-      </mesh>
-    </group>
-  );
-}
-
-function RutherfordModel3D({ protons, neutrons, electrons, highQuality }: { protons: number; neutrons: number; electrons: number; highQuality: boolean }) {
+// 3. Rutherford Nuclear Model (Positive Proton Nucleus with Orbiting Negative Electrons)
+function RutherfordModel3D({ protons, electrons, highQuality }: { protons: number; electrons: number; highQuality: boolean }) {
   const electronData = useMemo(() => {
     const arr = [];
-    const baseRadius = Math.max(1.5, Math.cbrt(protons + neutrons) * 0.18 + 1.2);
+    const baseRadius = Math.max(1.4, Math.cbrt(Math.max(1, protons)) * 0.2 + 1.1);
     for (let i = 0; i < electrons; i++) {
-      const radius = baseRadius + (i % 6) * 0.35 + (Math.random() * 0.3);
+      const radius = baseRadius + (i % 5) * 0.3 + (Math.random() * 0.25);
       const speed = 1.8 + (Math.random() * 0.8);
       const euler: [number, number, number] = [
-        (i * 1.1) % (Math.PI * 2),
-        (i * 0.7) % (Math.PI * 2),
-        (i * 1.5) % (Math.PI * 2)
+        (i * 1.2) % (Math.PI * 2),
+        (i * 0.8) % (Math.PI * 2),
+        (i * 1.4) % (Math.PI * 2)
       ];
       arr.push({ radius, speed, euler, offset: (i / Math.max(1, electrons)) * Math.PI * 2 });
     }
     return arr;
-  }, [electrons, protons, neutrons]);
+  }, [electrons, protons]);
 
   return (
     <group>
-      <Nucleus protons={protons} neutrons={neutrons} />
+      {/* Rutherford nucleus with protons only (no neutrons discovered yet) */}
+      <Nucleus protons={protons} neutrons={0} />
       {electronData.map((e, i) => (
         <RutherfordElectron
           key={i}
@@ -418,13 +369,14 @@ function ThomsonModel3D({ protons, electrons, highQuality }: { protons: number; 
   );
 }
 
-// 5. Dalton Solid Sphere Model (Indivisible hard sphere scaled by atomic weight)
+// 5. Dalton Solid Sphere Model (Indivisible hard sphere scaled by atomic weight & mass density)
 function DaltonModel3D({ protons, neutrons, highQuality }: { protons: number; neutrons: number; highQuality: boolean }) {
   const mass = protons + neutrons;
-  const radius = Math.max(1.3, Math.cbrt(mass > 0 ? mass : 1) * 0.52);
+  // Scaled by mass / atomic weight to accurately represent heavier vs lighter atoms according to Dalton's postulates
+  const radius = mass === 0 ? 1.0 : Math.max(0.8, Math.cbrt(mass) * 0.45);
 
-  const hue = (protons * 22) % 360;
-  const color = protons > 0 ? `hsl(${hue}, 70%, 55%)` : '#94a3b8';
+  const hue = protons > 0 ? (protons * 37) % 360 : 210;
+  const color = protons > 0 ? `hsl(${hue}, 65%, 50%)` : '#64748b';
 
   const meshRef = useRef<THREE.Mesh>(null!);
   useFrame((_, delta) => {
@@ -440,20 +392,21 @@ function DaltonModel3D({ protons, neutrons, highQuality }: { protons: number; ne
         <sphereGeometry args={[radius, highQuality ? 64 : 32, highQuality ? 64 : 32]} />
         <meshStandardMaterial
           color={color}
-          roughness={0.15}
-          metalness={0.7}
+          roughness={0.12}
+          metalness={0.8}
         />
       </mesh>
+      {/* Dalton atomic mass boundary ring & label indicator */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <ringGeometry args={[radius * 1.05, radius * 1.08, 64]} />
-        <meshBasicMaterial color="#cbd5e1" side={THREE.DoubleSide} transparent opacity={0.2} />
+        <ringGeometry args={[radius * 1.04, radius * 1.07, 64]} />
+        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.3} />
       </mesh>
     </group>
   );
 }
 
-// 6. Democritus Ancient Atomos Model (Geometric faceted polyhedra)
-function DemocritusModel3D({ protons, highQuality }: { protons: number; highQuality: boolean }) {
+// 6. Democritus Ancient Atomos Model (Philosophical geometric polyhedra with physical texture/hooks)
+function DemocritusModel3D({ protons, neutrons, highQuality }: { protons: number; neutrons: number; highQuality: boolean }) {
   const meshRef = useRef<THREE.Group>(null!);
 
   useFrame((_, delta) => {
@@ -464,29 +417,31 @@ function DemocritusModel3D({ protons, highQuality }: { protons: number; highQual
     }
   });
 
-  const polyType = protons % 4;
+  // Democritus posited different geometric shapes based on the element's properties (e.g. sharp/faceted vs smooth)
+  const shapeType = (protons + neutrons) % 4;
+  const scale = Math.max(1.1, Math.cbrt(Math.max(1, protons + neutrons)) * 0.38);
 
   return (
-    <group ref={meshRef}>
+    <group ref={meshRef} scale={[scale, scale, scale]}>
       <mesh>
-        {polyType === 0 && <icosahedronGeometry args={[1.5, highQuality ? 1 : 0]} />}
-        {polyType === 1 && <octahedronGeometry args={[1.6, highQuality ? 1 : 0]} />}
-        {polyType === 2 && <dodecahedronGeometry args={[1.4, highQuality ? 1 : 0]} />}
-        {polyType === 3 && <tetrahedronGeometry args={[1.7, highQuality ? 1 : 0]} />}
+        {shapeType === 0 && <icosahedronGeometry args={[1.2, highQuality ? 1 : 0]} />}
+        {shapeType === 1 && <octahedronGeometry args={[1.3, highQuality ? 1 : 0]} />}
+        {shapeType === 2 && <dodecahedronGeometry args={[1.1, highQuality ? 1 : 0]} />}
+        {shapeType === 3 && <tetrahedronGeometry args={[1.4, highQuality ? 1 : 0]} />}
         <meshStandardMaterial
-          color="#d8b4fe"
-          roughness={0.25}
-          metalness={0.5}
-          wireframe={false}
+          color="#c084fc"
+          roughness={0.2}
+          metalness={0.4}
           flatShading
         />
       </mesh>
+      {/* Geometrical wireframe overlay representing Democritus's hooks/facets */}
       <mesh>
-        {polyType === 0 && <icosahedronGeometry args={[1.52, 0]} />}
-        {polyType === 1 && <octahedronGeometry args={[1.62, 0]} />}
-        {polyType === 2 && <dodecahedronGeometry args={[1.42, 0]} />}
-        {polyType === 3 && <tetrahedronGeometry args={[1.72, 0]} />}
-        <meshBasicMaterial color="#a855f7" wireframe transparent opacity={0.6} />
+        {shapeType === 0 && <icosahedronGeometry args={[1.22, 0]} />}
+        {shapeType === 1 && <octahedronGeometry args={[1.32, 0]} />}
+        {shapeType === 2 && <dodecahedronGeometry args={[1.12, 0]} />}
+        {shapeType === 3 && <tetrahedronGeometry args={[1.42, 0]} />}
+        <meshBasicMaterial color="#e879f9" wireframe transparent opacity={0.7} />
       </mesh>
     </group>
   );
@@ -528,13 +483,13 @@ function Atom3DHistorical({
     case 'schrodinger':
       return <SchrodingerModel3D protons={protons} neutrons={neutrons} electrons={electrons} highQuality={highQuality} />;
     case 'rutherford':
-      return <RutherfordModel3D protons={protons} neutrons={neutrons} electrons={electrons} highQuality={highQuality} />;
+      return <RutherfordModel3D protons={protons} electrons={electrons} highQuality={highQuality} />;
     case 'thomson':
       return <ThomsonModel3D protons={protons} electrons={electrons} highQuality={highQuality} />;
     case 'dalton':
       return <DaltonModel3D protons={protons} neutrons={neutrons} highQuality={highQuality} />;
     case 'democritus':
-      return <DemocritusModel3D protons={protons} highQuality={highQuality} />;
+      return <DemocritusModel3D protons={protons} neutrons={neutrons} highQuality={highQuality} />;
     default:
       return <BohrModel3D protons={protons} neutrons={neutrons} electrons={electrons} highQuality={highQuality} />;
   }
@@ -617,10 +572,35 @@ function QuantumOrbitalBadges({ electrons }: { electrons: number }) {
 // ─── MAIN APP ───────────────────────────────────────────────────────────────
 
 export default function App() {
+  // URL Backdoor/Shortcut parser (e.g. /buildyourownatom.html/carbon, /atom/#carbon, ?element=carbon)
+  const getInitialElement = () => {
+    try {
+      const fullUrl = decodeURIComponent(window.location.pathname + window.location.search + window.location.hash).toLowerCase();
+      
+      // Extract segment following last slash, question mark, or hash
+      const parts = fullUrl.split(/[\/\?\#=]/).map(p => p.trim()).filter(Boolean);
+
+      for (const [key, el] of Object.entries(ELEMENTS)) {
+        const z = Number(key);
+        const name = el.name.toLowerCase();
+        const symbol = el.symbol.toLowerCase();
+        
+        if (parts.includes(name) || parts.includes(symbol) || parts.includes(String(z))) {
+          return { protons: z, neutrons: z, electrons: z };
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    return { protons: 0, neutrons: 0, electrons: 0 };
+  };
+
+  const initialEl = useMemo(() => getInitialElement(), []);
+
   const [model, setModel] = useState<ModelType>("bohr");
-  const [protons, setProtons] = useState(0);
-  const [neutrons, setNeutrons] = useState(0);
-  const [electrons, setElectrons] = useState(0);
+  const [protons, setProtons] = useState(initialEl.protons);
+  const [neutrons, setNeutrons] = useState(initialEl.neutrons);
+  const [electrons, setElectrons] = useState(initialEl.electrons);
   
   const [dark, setDark] = useState(true);
   const [highQuality, setHighQuality] = useState(false);
@@ -786,10 +766,10 @@ export default function App() {
     <div className="p-3 space-y-3">
       {modelSelectorBar}
 
-      <p className={`text-xs uppercase tracking-widest font-bold ${textMuted}`}>Particle Controls</p>
-      <ParticleRow label="Protons" color="#ff3333" dark={dark} onAdd={n => setProtons(p => !isBlackHole ? p + n : p)} onRemove={n => setProtons(p => Math.max(0, p - n))} />
-      <ParticleRow label="Electrons" color="#38bdf8" dark={dark} onAdd={n => setElectrons(e => !isBlackHole ? e + n : e)} onRemove={n => setElectrons(e => Math.max(0, e - n))} />
-      <ParticleRow label="Neutrons" color="#ffcc00" dark={dark} onAdd={n => setNeutrons(nn => !isBlackHole ? nn + n : nn)} onRemove={n => setNeutrons(nn => Math.max(0, nn - n))} />
+      <p className={`text-xs uppercase tracking-widest font-bold ${textMuted}`}>Particle Controls (Max 300)</p>
+      <ParticleRow label="Protons" color="#ff3333" dark={dark} onAdd={n => setProtons(p => !isBlackHole ? Math.min(300, p + n) : p)} onRemove={n => setProtons(p => Math.max(0, p - n))} />
+      <ParticleRow label="Electrons" color="#38bdf8" dark={dark} onAdd={n => setElectrons(e => !isBlackHole ? Math.min(300, e + n) : e)} onRemove={n => setElectrons(e => Math.max(0, e - n))} />
+      <ParticleRow label="Neutrons" color="#ffcc00" dark={dark} onAdd={n => setNeutrons(nn => !isBlackHole ? Math.min(300, nn + n) : nn)} onRemove={n => setNeutrons(nn => Math.max(0, nn - n))} />
       
       <div className={`pt-2 border-t ${divider} text-xs space-y-0.5 ${textMuted}`}>
         <div className="flex justify-between md:block"><span>Protons:</span> <span className="text-red-400 font-bold">{protons}</span></div>
@@ -965,7 +945,7 @@ export default function App() {
             <ambientLight intensity={Math.PI / 2} />
             <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} />
             <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
-            <Atom3DHistorical model={model} protons={protons} neutrons={neutrons} electrons={Math.min(electrons, 200)} isBlackHole={isBlackHole} highQuality={highQuality} />
+            <Atom3DHistorical model={model} protons={protons} neutrons={neutrons} electrons={Math.min(electrons, 300)} isBlackHole={isBlackHole} highQuality={highQuality} />
             <OrbitControls makeDefault minDistance={2} maxDistance={30} />
           </Canvas>
 
