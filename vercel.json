@@ -2,5 +2,11 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "cleanUrls": false,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/buildyourownatom.html/:path*", "destination": "/buildyourownatom.html" },
+    { "source": "/buildyourownatom/:path*", "destination": "/buildyourownatom.html" },
+    { "source": "/atom/:path*", "destination": "/atom/index.html" },
+    { "source": "/sotu/:path*", "destination": "/sotu/index.html" }
+  ]
 }
