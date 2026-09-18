@@ -2290,9 +2290,16 @@
   },
   {
     "objectID": 328,
-    "exponent": -2,
+    "exponent": -2.0,
     "coeff": 7.2,
-    "cullFac": 1,
-    "realRatio": 1
+    "cullFac": 1.0,
+    "realRatio": 1.0
+  },
+  {
+    "objectID": 329,
+    "exponent": 6.0,
+    "coeff": 3.214,
+    "cullFac": 1.0,
+    "realRatio": 1.0
   }
 ]

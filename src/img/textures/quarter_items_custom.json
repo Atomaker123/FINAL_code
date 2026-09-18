@@ -2,33 +2,53 @@
   "frames": {
     "328_quarter": {
       "frame": {
-        "x": 0,
-        "y": 0,
-        "w": 400,
-        "h": 400
+        "x": 4,
+        "y": 4,
+        "w": 100,
+        "h": 100
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 400,
-        "h": 400
+        "w": 100,
+        "h": 100
       },
       "sourceSize": {
-        "w": 400,
-        "h": 400
+        "w": 100,
+        "h": 100
+      }
+    },
+    "329_quarter": {
+      "frame": {
+        "x": 108,
+        "y": 4,
+        "w": 87,
+        "h": 97
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 87,
+        "h": 97
+      },
+      "sourceSize": {
+        "w": 87,
+        "h": 97
       }
     }
   },
   "meta": {
-    "app": "custom_item_script",
-    "version": "1.0",
+    "app": "universe_item_manager",
+    "version": "2.0",
     "image": "quarter_items_custom.png",
     "format": "RGBA8888",
     "size": {
-      "w": 400,
-      "h": 400
+      "w": 199,
+      "h": 108
     },
     "scale": "0.25"
   }

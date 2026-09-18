@@ -2,8 +2,8 @@
   "frames": {
     "328": {
       "frame": {
-        "x": 0,
-        "y": 0,
+        "x": 4,
+        "y": 4,
         "w": 400,
         "h": 400
       },
@@ -19,16 +19,36 @@
         "w": 400,
         "h": 400
       }
+    },
+    "329": {
+      "frame": {
+        "x": 408,
+        "y": 4,
+        "w": 348,
+        "h": 389
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 348,
+        "h": 389
+      },
+      "sourceSize": {
+        "w": 348,
+        "h": 389
+      }
     }
   },
   "meta": {
-    "app": "custom_item_script",
-    "version": "1.0",
+    "app": "universe_item_manager",
+    "version": "2.0",
     "image": "new_items_custom.png",
     "format": "RGBA8888",
     "size": {
-      "w": 400,
-      "h": 400
+      "w": 760,
+      "h": 408
     },
     "scale": "1"
   }

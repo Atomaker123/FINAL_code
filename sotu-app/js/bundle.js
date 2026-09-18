@@ -51136,8 +51136,12 @@ class Item extends entity_1.Entity {
         this.textDatum = textDatum;
         this.sizeData = sizeData;
         this.units = units;
-        const dX = window.innerWidth / 2 - textureLow.trim.x + textureLow.trim.width / 2;
-        const dY = window.innerHeight / 2 - textureLow.trim.y + textureLow.trim.height / 2;
+        const trimX = textureLow && textureLow.trim ? textureLow.trim.x : 0;
+        const trimY = textureLow && textureLow.trim ? textureLow.trim.y : 0;
+        const trimW = textureLow && textureLow.trim ? textureLow.trim.width : (textureLow ? textureLow.width : 0);
+        const trimH = textureLow && textureLow.trim ? textureLow.trim.height : (textureLow ? textureLow.height : 0);
+        const dX = window.innerWidth / 2 - trimX + trimW / 2;
+        const dY = window.innerHeight / 2 - trimY + trimH / 2;
         var c = Math.sqrt(dX * dX + dY * dY);
         this.centerVec = new pixi_js_legacy_1.Point(dX / c, dY / c);
         this.onClick = onClick;
@@ -51282,10 +51286,12 @@ class Ring extends entity_1.Entity {
         this.textDatum = textDatum;
         this.sizeData = sizeData;
         this.meterPlural = metersText;
-        const dX = window.innerWidth / 2 - textureLow.trim.x + textureLow.trim.width / 2;
-        const dY = window.innerHeight / 2 -
-            textureLow.trim.y +
-            textureLow.trim.height / 2;
+        const trimX = textureLow && textureLow.trim ? textureLow.trim.x : 0;
+        const trimY = textureLow && textureLow.trim ? textureLow.trim.y : 0;
+        const trimW = textureLow && textureLow.trim ? textureLow.trim.width : (textureLow ? textureLow.width : 0);
+        const trimH = textureLow && textureLow.trim ? textureLow.trim.height : (textureLow ? textureLow.height : 0);
+        const dX = window.innerWidth / 2 - trimX + trimW / 2;
+        const dY = window.innerHeight / 2 - trimY + trimH / 2;
         var c = Math.sqrt(dX * dX + dY * dY);
         this.centerVec = new pixi_js_legacy_1.Point(dX / c, dY / c);
         const scale = e_1.E(this.scaleExp) * this.coeff * this.realRatio;
@@ -51971,7 +51977,7 @@ class Universe {
                         textDatum.title = textData[(idx - 29) * 2];
                         textDatum.description = textData[(idx - 29) * 2 + 1];
                     }
-                    if (!keepItemTitles.has(normalizeTitle(textDatum.title))) {
+                    if (idx < 327 && !keepItemTitles.has(normalizeTitle(textDatum.title))) {
                         continue;
                     }
                     const item = new item_1.Item(sizeData, textureLow, visualLocation, textDatum, extraText, units, onClick);

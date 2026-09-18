@@ -7,7 +7,10 @@ const { spawn } = require('child_process')
 
 const port = process.env.PORT || 3000;
 
-app.use(compression())
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  next();
+});
 
 // Serve buildyourownatom HTML for any subpath (e.g. /buildyourownatom.html/carbon, /buildyourownatom/carbon)
 app.use((req, res, next) => {

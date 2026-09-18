@@ -1,0 +1,28 @@
+[
+  {
+    "objectID": 328,
+    "title": "cricket ball",
+    "description": "its a ballll",
+    "exponent": -2.0,
+    "coeff": 7.2,
+    "cullFac": 1.0,
+    "realRatio": 1.0,
+    "boundW": 200.0,
+    "boundH": 200.0,
+    "titleY": -150.0,
+    "imageFileName": "328_cricket_ball.png"
+  },
+  {
+    "objectID": 329,
+    "title": "India",
+    "description": "INDIIAIIAIAIAII",
+    "exponent": 6.0,
+    "coeff": 3.214,
+    "cullFac": 1.0,
+    "realRatio": 1.0,
+    "boundW": 200.0,
+    "boundH": 200.0,
+    "titleY": -150.0,
+    "imageFileName": "329_india.png"
+  }
+]

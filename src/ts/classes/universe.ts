@@ -276,7 +276,9 @@ export class Universe {
       "The Distance Earth Has Travelled (Relative to Sun)",
       "Observable Universe",
       "Universe",
-      "cricket ball"
+      "cricket ball",
+      "Test Galaxy Orb",
+      "India"
     ].map(normalizeTitle));
 
     const onClick = (item: Item) => {
@@ -303,7 +305,7 @@ export class Universe {
           textDatum.title = textData[(idx - 29) * 2];
           textDatum.description = textData[(idx - 29) * 2 + 1];
         }
-        if (!keepItemTitles.has(normalizeTitle(textDatum.title))) {
+        if (idx < 327 && !keepItemTitles.has(normalizeTitle(textDatum.title))) {
           continue;
         }
         const item = new Item(
