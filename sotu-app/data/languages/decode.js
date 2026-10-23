@@ -23,6 +23,6 @@ function replacer(str) {
   return text;
 }
 for (let i = 0; i < 20; i++) {
-  const rawText = fs.readFileSync(`test/l${i}.txt`, 'utf-8');
-  fs.writeFileSync(`out/l${i}.txt`, replacer(rawText))
+  const rawText = fs.readFileSync(`test/t${i}.txt`, 'utf-8');
+  fs.writeFileSync(`out/t${i}.txt`, replacer(rawText));
 }

@@ -1,15 +1,19 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
+import { OrbitControls, Stars, Html } from "@react-three/drei";
 import * as THREE from "three";
 import elementData from "../imports/elements.json";
 import {
   ModelType,
   ATOMIC_MODELS,
+  BohrShellDistributionItem,
   getBohrShellDistribution,
   getFullElectronConfiguration,
-  sampleOrbitalPosition
+  sampleOrbitalPosition,
+  ORBITAL_COLORS,
+  ORBITAL_RGB,
+  SubshellConfig
 } from "./components/historicalModels";
 
 type ElementDB = Record<string, {
@@ -72,7 +76,534 @@ function Nucleus({ protons, neutrons }: { protons: number; neutrons: number }) {
   );
 }
 
-// 1. Bohr Model (Planetary multi-angle circular & gyroscopic orbits)
+// ─── 1. BOHR QUANTIZED PLANETARY MODEL (CONCENTRIC KLMN SHELLS) ─────────────────
+
+function BohrShellElectrons({
+  radius,
+  count,
+  shellIndex,
+  color,
+  highQuality
+}: {
+  radius: number;
+  count: number;
+  shellIndex: number;
+  color: string;
+  highQuality: boolean;
+}) {
+  const meshRefs = useRef<THREE.Mesh[]>([]);
+  // Quantized orbital speed: inner shells orbit faster than outer shells (ω ∝ 1 / n^0.85)
+  const speed = 1.6 / Math.pow(shellIndex + 1, 0.85);
+
+  useFrame(({ clock }) => {
+    const t = clock.getElapsedTime() * speed;
+    for (let k = 0; k < count; k++) {
+      const m = meshRefs.current[k];
+      if (m) {
+        const angle = (k / count) * Math.PI * 2 + t;
+        m.position.x = Math.cos(angle) * radius;
+        m.position.y = Math.sin(angle) * radius;
+        m.position.z = 0;
+      }
+    }
+  });
+
+  return (
+    <group>
+      {Array.from({ length: count }).map((_, k) => (
+        <mesh
+          key={k}
+          ref={(el) => { if (el) meshRefs.current[k] = el; }}
+        >
+          <sphereGeometry args={[0.08, highQuality ? 24 : 16, highQuality ? 24 : 16]} />
+          <meshStandardMaterial
+            color="#ffffff"
+            emissive={color}
+            emissiveIntensity={1.3}
+            roughness={0.2}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
+function BohrModel3D({
+  protons,
+  neutrons,
+  electrons,
+  highQuality
+}: {
+  protons: number;
+  neutrons: number;
+  electrons: number;
+  highQuality: boolean;
+}) {
+  const shells = useMemo(() => getBohrShellDistribution(electrons), [electrons]);
+
+  return (
+    <group>
+      <Nucleus protons={protons} neutrons={neutrons} />
+
+      {shells.map((shell) => {
+        const isOccupied = shell.count > 0;
+        return (
+          <group key={shell.shellIndex}>
+            {/* Concentric circular orbit ring */}
+            <mesh>
+              <ringGeometry
+                args={[
+                  shell.radius - 0.018,
+                  shell.radius + 0.018,
+                  highQuality ? 128 : 64
+                ]}
+              />
+              <meshBasicMaterial
+                color={shell.color}
+                side={THREE.DoubleSide}
+                transparent
+                opacity={isOccupied ? 0.52 : 0.16}
+              />
+            </mesh>
+
+            {/* Subtle glowing halo on orbit line */}
+            <mesh>
+              <ringGeometry
+                args={[
+                  shell.radius - 0.05,
+                  shell.radius + 0.05,
+                  highQuality ? 96 : 48
+                ]}
+              />
+              <meshBasicMaterial
+                color={shell.color}
+                side={THREE.DoubleSide}
+                transparent
+                opacity={isOccupied ? 0.14 : 0.03}
+              />
+            </mesh>
+
+            {/* Floating 3D Shell Label Badge */}
+            <Html
+              position={[
+                shell.radius * 0.707,
+                shell.radius * 0.707,
+                0
+              ]}
+              center
+              distanceFactor={15}
+            >
+              <div
+                className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold whitespace-nowrap pointer-events-none select-none transition-all ${
+                  isOccupied
+                    ? "bg-slate-900/90 border border-cyan-400/60 text-cyan-300 shadow-md shadow-cyan-950/50"
+                    : "bg-slate-900/60 border border-slate-700/40 text-slate-500"
+                }`}
+              >
+                {shell.letter} Shell (n={shell.n}) · {shell.count}/{shell.max}
+              </div>
+            </Html>
+
+            {/* Orbiting electrons on this quantized shell ring */}
+            {isOccupied && (
+              <BohrShellElectrons
+                radius={shell.radius}
+                count={shell.count}
+                shellIndex={shell.shellIndex}
+                color={shell.color}
+                highQuality={highQuality}
+              />
+            )}
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+// ─── 2. SCHRÖDINGER QUANTUM MECHANICAL MODEL (s, p, d, f SUBSHELLS) ─────────
+
+// s-Orbital: Translucent Spherical Cloud Boundary
+function SOrbitalGeometry({ n, count, highQuality }: { n: number; count: number; highQuality: boolean }) {
+  const r = 0.95 + (n - 1) * 0.85;
+  const groupRef = useRef<THREE.Group>(null!);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      // Gentle breathing wave pulsation
+      const s = 1 + Math.sin(clock.getElapsedTime() * 1.5 + n) * 0.02;
+      groupRef.current.scale.set(s, s, s);
+    }
+  });
+
+  return (
+    <group ref={groupRef}>
+      <mesh>
+        <sphereGeometry args={[r, highQuality ? 48 : 32, highQuality ? 48 : 32]} />
+        <meshStandardMaterial
+          color="#38bdf8"
+          transparent
+          opacity={count === 2 ? 0.16 : 0.11}
+          roughness={0.2}
+          metalness={0.1}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* Equator guide contour */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <ringGeometry args={[r - 0.012, r + 0.012, highQuality ? 96 : 48]} />
+        <meshBasicMaterial color="#38bdf8" transparent opacity={0.25} side={THREE.DoubleSide} />
+      </mesh>
+    </group>
+  );
+}
+
+// p-Orbital: Dumbbell Lobes along X (px), Y (py), or Z (pz)
+function PDumbbellOrbital({
+  axis,
+  n,
+  count,
+  highQuality
+}: {
+  axis: 'x' | 'y' | 'z';
+  n: number;
+  count: number;
+  highQuality: boolean;
+}) {
+  const dist = 0.85 + (n - 2) * 0.65;
+  const rLobe = 0.42 + (n - 2) * 0.12;
+  const groupRef = useRef<THREE.Group>(null!);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      const pulse = 1 + Math.sin(clock.getElapsedTime() * 2.0 + (axis === 'x' ? 0 : axis === 'y' ? 1.5 : 3.0)) * 0.025;
+      groupRef.current.scale.set(pulse, pulse, pulse);
+    }
+  });
+
+  const rotation: [number, number, number] =
+    axis === 'x' ? [0, Math.PI / 2, 0] :
+    axis === 'y' ? [Math.PI / 2, 0, 0] :
+    [0, 0, 0];
+
+  return (
+    <group ref={groupRef} rotation={rotation}>
+      {/* Positive Lobe */}
+      <mesh position={[0, 0, dist]} scale={[rLobe * 0.85, rLobe * 0.85, rLobe * 1.5]}>
+        <sphereGeometry args={[1, highQuality ? 32 : 20, highQuality ? 32 : 20]} />
+        <meshStandardMaterial
+          color="#818cf8"
+          emissive="#4f46e5"
+          emissiveIntensity={0.2}
+          transparent
+          opacity={count === 2 ? 0.25 : 0.18}
+          roughness={0.25}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+      {/* Negative Lobe */}
+      <mesh position={[0, 0, -dist]} scale={[rLobe * 0.85, rLobe * 0.85, rLobe * 1.5]}>
+        <sphereGeometry args={[1, highQuality ? 32 : 20, highQuality ? 32 : 20]} />
+        <meshStandardMaterial
+          color="#818cf8"
+          emissive="#4f46e5"
+          emissiveIntensity={0.2}
+          transparent
+          opacity={count === 2 ? 0.25 : 0.18}
+          roughness={0.25}
+          side={THREE.DoubleSide}
+          depthWrite={false}
+        />
+      </mesh>
+    </group>
+  );
+}
+
+// d-Orbital: 4-Leaf Cloverleaf Lobe Cluster
+function DCloverOrbital({
+  subType,
+  n,
+  count,
+  highQuality
+}: {
+  subType: number; // 0..4
+  n: number;
+  count: number;
+  highQuality: boolean;
+}) {
+  const dist = 1.1 + (n - 3) * 0.7;
+  const rLobe = 0.38 + (n - 3) * 0.1;
+  const groupRef = useRef<THREE.Group>(null!);
+
+  useFrame(({ clock }) => {
+    if (groupRef.current) {
+      const pulse = 1 + Math.sin(clock.getElapsedTime() * 2.2 + subType) * 0.025;
+      groupRef.current.scale.set(pulse, pulse, pulse);
+    }
+  });
+
+  if (subType === 4) {
+    // dz²: Dumbbell along Z axis + toroidal ring in XY plane
+    return (
+      <group ref={groupRef}>
+        <mesh position={[0, 0, dist]} scale={[rLobe * 0.8, rLobe * 0.8, rLobe * 1.4]}>
+          <sphereGeometry args={[1, highQuality ? 24 : 16, highQuality ? 24 : 16]} />
+          <meshStandardMaterial color="#ec4899" emissive="#be185d" emissiveIntensity={0.25} transparent opacity={0.26} side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+        <mesh position={[0, 0, -dist]} scale={[rLobe * 0.8, rLobe * 0.8, rLobe * 1.4]}>
+          <sphereGeometry args={[1, highQuality ? 24 : 16, highQuality ? 24 : 16]} />
+          <meshStandardMaterial color="#ec4899" emissive="#be185d" emissiveIntensity={0.25} transparent opacity={0.26} side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+        {/* Torus ring in XY plane */}
+        <mesh rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[dist * 0.6, rLobe * 0.45, 16, 32]} />
+          <meshStandardMaterial color="#ec4899" emissive="#be185d" emissiveIntensity={0.2} transparent opacity={0.24} side={THREE.DoubleSide} depthWrite={false} />
+        </mesh>
+      </group>
+    );
+  }
+
+  // 4 lobes in a plane
+  const angles = subType === 3
+    ? [0, Math.PI / 2, Math.PI, (3 * Math.PI) / 2]
+    : [Math.PI / 4, (3 * Math.PI) / 4, (5 * Math.PI) / 4, (7 * Math.PI) / 4];
+
+  return (
+    <group ref={groupRef}>
+      {angles.map((ang, i) => {
+        let pos: [number, number, number] = [dist * Math.cos(ang), dist * Math.sin(ang), 0];
+        if (subType === 1) pos = [0, dist * Math.cos(ang), dist * Math.sin(ang)];
+        else if (subType === 2) pos = [dist * Math.cos(ang), 0, dist * Math.sin(ang)];
+
+        return (
+          <mesh key={i} position={pos} scale={[rLobe, rLobe, rLobe * 1.2]}>
+            <sphereGeometry args={[1, highQuality ? 24 : 16, highQuality ? 24 : 16]} />
+            <meshStandardMaterial
+              color="#ec4899"
+              emissive="#be185d"
+              emissiveIntensity={0.2}
+              transparent
+              opacity={count >= 2 ? 0.26 : 0.18}
+              side={THREE.DoubleSide}
+              depthWrite={false}
+            />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+// Quantum Wave Particle Oscillations for each active electron
+function QuantumWaveElectron({
+  type,
+  n,
+  mIndex,
+  color
+}: {
+  type: 's' | 'p' | 'd' | 'f';
+  n: number;
+  mIndex: number;
+  color: string;
+}) {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const speed = 1.4 + (mIndex % 4) * 0.3;
+  const phase = (mIndex * 1.3) % (Math.PI * 2);
+  const rBase = 0.85 + n * 0.65;
+
+  useFrame(({ clock }) => {
+    if (!meshRef.current) return;
+    const t = clock.getElapsedTime() * speed + phase;
+
+    if (type === 's') {
+      // Circulates smoothly along spherical shell
+      const theta = t * 1.2;
+      const phi = Math.sin(t * 0.8) * 1.1 + Math.PI / 2;
+      meshRef.current.position.x = rBase * Math.sin(phi) * Math.cos(theta);
+      meshRef.current.position.y = rBase * Math.sin(phi) * Math.sin(theta);
+      meshRef.current.position.z = rBase * Math.cos(phi);
+    } else if (type === 'p') {
+      // Oscillates through the two lobes of the dumbbell
+      const axisIdx = mIndex % 3;
+      const mainDist = Math.sin(t) * rBase * 1.15;
+      const lat1 = Math.cos(t * 2) * 0.18 * rBase;
+      const lat2 = Math.sin(t * 2) * 0.18 * rBase;
+
+      if (axisIdx === 0) {
+        meshRef.current.position.set(mainDist, lat1, lat2);
+      } else if (axisIdx === 1) {
+        meshRef.current.position.set(lat1, mainDist, lat2);
+      } else {
+        meshRef.current.position.set(lat1, lat2, mainDist);
+      }
+    } else if (type === 'd') {
+      // Circulates through the 4 cloverleaf lobes
+      const cloverAng = t * 1.5;
+      const r = rBase * 1.1 * Math.abs(Math.sin(2 * cloverAng));
+      meshRef.current.position.x = r * Math.cos(cloverAng);
+      meshRef.current.position.y = r * Math.sin(cloverAng);
+      meshRef.current.position.z = Math.sin(t * 3) * 0.2;
+    } else {
+      // f orbital: complex harmonic path
+      const ang = t * 1.3;
+      meshRef.current.position.x = rBase * 1.2 * Math.cos(ang) * Math.sin(2 * ang);
+      meshRef.current.position.y = rBase * 1.2 * Math.sin(ang) * Math.sin(2 * ang);
+      meshRef.current.position.z = rBase * 1.2 * Math.cos(2 * ang);
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[0.075, 16, 16]} />
+      <meshStandardMaterial
+        color="#ffffff"
+        emissive={color}
+        emissiveIntensity={1.4}
+        roughness={0.2}
+      />
+    </mesh>
+  );
+}
+
+function SchrodingerModel3D({
+  protons,
+  neutrons,
+  electrons,
+  highQuality
+}: {
+  protons: number;
+  neutrons: number;
+  electrons: number;
+  highQuality: boolean;
+}) {
+  const configs = useMemo(() => getFullElectronConfiguration(electrons), [electrons]);
+
+  // Pre-generate 3D quantum probability cloud points with TRUE VERTEX COLORS matching s, p, d, f
+  const cloudData = useMemo(() => {
+    const positions: number[] = [];
+    const colors: number[] = [];
+    const ptsPerElectron = highQuality ? 140 : 70;
+
+    for (const conf of configs) {
+      const type = conf.type;
+      const n = conf.n;
+      const count = conf.count;
+      const totalPoints = count * ptsPerElectron;
+      const rgb = ORBITAL_RGB[type];
+
+      for (let p = 0; p < totalPoints; p++) {
+        const mIdx = Math.floor(
+          Math.random() * (type === 's' ? 1 : type === 'p' ? 3 : type === 'd' ? 5 : 7)
+        );
+        const pos = sampleOrbitalPosition(type, n, mIdx, 1.15);
+        positions.push(pos[0], pos[1], pos[2]);
+        colors.push(rgb[0], rgb[1], rgb[2]);
+      }
+    }
+
+    return {
+      positions: new Float32Array(positions),
+      colors: new Float32Array(colors),
+      count: positions.length / 3
+    };
+  }, [configs, highQuality]);
+
+  const groupRef = useRef<THREE.Group>(null!);
+  useFrame((_, delta) => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y += delta * 0.08;
+      groupRef.current.rotation.x += delta * 0.04;
+    }
+  });
+
+  // Generate wave electron indices
+  const waveElectrons = useMemo(() => {
+    return configs.flatMap((conf) => {
+      return Array.from({ length: conf.count }).map((_, eIdx) => ({
+        type: conf.type,
+        n: conf.n,
+        mIndex: eIdx,
+        color: ORBITAL_COLORS[conf.type]
+      }));
+    });
+  }, [configs]);
+
+  return (
+    <group ref={groupRef}>
+      <Nucleus protons={protons} neutrons={neutrons} />
+
+      {/* 3D Quantum Probability Cloud Points with True Vertex Colors */}
+      {cloudData.count > 0 && (
+        <points>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              count={cloudData.count}
+              array={cloudData.positions}
+              itemSize={3}
+            />
+            <bufferAttribute
+              attach="attributes-color"
+              count={cloudData.count}
+              array={cloudData.colors}
+              itemSize={3}
+            />
+          </bufferGeometry>
+          <pointsMaterial
+            size={highQuality ? 0.05 : 0.065}
+            vertexColors={true}
+            transparent
+            opacity={0.55}
+            blending={THREE.AdditiveBlending}
+            depthWrite={false}
+          />
+        </points>
+      )}
+
+      {/* Exact 3D Subshell Orbital Geometries (s Spheres, p Dumbbells, d Cloverleaves) */}
+      {configs.map((conf, idx) => {
+        if (conf.type === 's') {
+          return <SOrbitalGeometry key={`${conf.label}-${idx}`} n={conf.n} count={conf.count} highQuality={highQuality} />;
+        } else if (conf.type === 'p') {
+          return (
+            <group key={`${conf.label}-${idx}`}>
+              {conf.count >= 1 && <PDumbbellOrbital axis="x" n={conf.n} count={conf.count >= 4 ? 2 : 1} highQuality={highQuality} />}
+              {conf.count >= 2 && <PDumbbellOrbital axis="y" n={conf.n} count={conf.count >= 5 ? 2 : 1} highQuality={highQuality} />}
+              {conf.count >= 3 && <PDumbbellOrbital axis="z" n={conf.n} count={conf.count >= 6 ? 2 : 1} highQuality={highQuality} />}
+            </group>
+          );
+        } else if (conf.type === 'd') {
+          return (
+            <group key={`${conf.label}-${idx}`}>
+              {conf.count >= 1 && <DCloverOrbital subType={0} n={conf.n} count={conf.count >= 6 ? 2 : 1} highQuality={highQuality} />}
+              {conf.count >= 2 && <DCloverOrbital subType={1} n={conf.n} count={conf.count >= 7 ? 2 : 1} highQuality={highQuality} />}
+              {conf.count >= 3 && <DCloverOrbital subType={2} n={conf.n} count={conf.count >= 8 ? 2 : 1} highQuality={highQuality} />}
+              {conf.count >= 4 && <DCloverOrbital subType={3} n={conf.n} count={conf.count >= 9 ? 2 : 1} highQuality={highQuality} />}
+              {conf.count >= 5 && <DCloverOrbital subType={4} n={conf.n} count={conf.count >= 10 ? 2 : 1} highQuality={highQuality} />}
+            </group>
+          );
+        }
+        return null;
+      })}
+
+      {/* Dynamic Quantum Wave Packets */}
+      {waveElectrons.map((we, i) => (
+        <QuantumWaveElectron
+          key={i}
+          type={we.type}
+          n={we.n}
+          mIndex={we.mIndex}
+          color={we.color}
+        />
+      ))}
+    </group>
+  );
+}
+
+// ─── 3. RUTHERFORD NUCLEAR MODEL (PROHIBITED NUCLEUS & CROSS-PLANE ORBITS) ────
+
 function RutherfordElectron({
   radius,
   speed,
@@ -100,8 +631,8 @@ function RutherfordElectron({
   return (
     <group rotation={rotation}>
       <mesh>
-        <ringGeometry args={[radius - 0.01, radius + 0.01, highQuality ? 96 : 48]} />
-        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.18} />
+        <ringGeometry args={[radius - 0.012, radius + 0.012, highQuality ? 96 : 48]} />
+        <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.2} />
       </mesh>
       <mesh ref={meshRef}>
         <sphereGeometry args={[0.075, 16, 16]} />
@@ -111,168 +642,17 @@ function RutherfordElectron({
   );
 }
 
-function BohrModel3D({ protons, neutrons, electrons, highQuality }: { protons: number; neutrons: number; electrons: number; highQuality: boolean }) {
-  const electronData = useMemo(() => {
-    const arr = [];
-    const baseRadius = Math.max(1.5, Math.cbrt(protons + neutrons) * 0.18 + 1.2);
-    for (let i = 0; i < electrons; i++) {
-      const radius = baseRadius + (i % 6) * 0.35 + (Math.random() * 0.3);
-      const speed = 1.8 + (Math.random() * 0.8);
-      const euler: [number, number, number] = [
-        (i * 1.1) % (Math.PI * 2),
-        (i * 0.7) % (Math.PI * 2),
-        (i * 1.5) % (Math.PI * 2)
-      ];
-      arr.push({ radius, speed, euler, offset: (i / Math.max(1, electrons)) * Math.PI * 2 });
-    }
-    return arr;
-  }, [electrons, protons, neutrons]);
-
-  return (
-    <group>
-      <Nucleus protons={protons} neutrons={neutrons} />
-      {electronData.map((e, i) => (
-        <RutherfordElectron
-          key={i}
-          radius={e.radius}
-          speed={e.speed}
-          rotation={e.euler}
-          offset={e.offset}
-          highQuality={highQuality}
-        />
-      ))}
-    </group>
-  );
-}
-
-// 2. Schrödinger Model (Quantum 3D Wave Probability Cloud & Aufbau Subshells)
-function SchrodingerModel3D({
-  protons,
-  neutrons,
-  electrons,
-  highQuality
-}: {
-  protons: number;
-  neutrons: number;
-  electrons: number;
-  highQuality: boolean;
-}) {
-  const configs = useMemo(() => getFullElectronConfiguration(electrons), [electrons]);
-  const cloudPoints = useMemo(() => {
-    const pts: { pos: [number, number, number]; color: string; size: number }[] = [];
-    for (const conf of configs) {
-      const type = conf.type;
-      const n = conf.n;
-      const count = conf.count;
-      const pointsPerElectron = highQuality ? 180 : 90;
-      const totalPoints = count * pointsPerElectron;
-
-      let subColor = '#38bdf8';
-      if (type === 'p') subColor = '#818cf8';
-      else if (type === 'd') subColor = '#ec4899';
-      else if (type === 'f') subColor = '#a855f7';
-
-      for (let p = 0; p < totalPoints; p++) {
-        const mIdx = Math.floor(Math.random() * (type === 's' ? 1 : type === 'p' ? 3 : type === 'd' ? 5 : 7));
-        const pos = sampleOrbitalPosition(type, n, mIdx, 1.15);
-        pts.push({
-          pos,
-          color: subColor,
-          size: Math.random() * 0.04 + 0.02
-        });
-      }
-    }
-    return pts;
-  }, [configs, highQuality]);
-
-  const groupRef = useRef<THREE.Group>(null!);
-  useFrame((_, delta) => {
-    if (groupRef.current) {
-      groupRef.current.rotation.y += delta * 0.12;
-      groupRef.current.rotation.x += delta * 0.06;
-    }
-  });
-
-  const waveElectrons = useMemo(() => {
-    return configs.flatMap((conf) => {
-      return Array.from({ length: conf.count }).map((_, eIdx) => ({
-        type: conf.type,
-        n: conf.n,
-        subIdx: eIdx,
-        speed: 1.2 + Math.random() * 0.6,
-        phase: Math.random() * Math.PI * 2
-      }));
-    });
-  }, [configs]);
-
-  const waveMeshRefs = useRef<THREE.Mesh[]>([]);
-
-  useFrame(({ clock }) => {
-    const t = clock.getElapsedTime();
-    waveElectrons.forEach((we, i) => {
-      const m = waveMeshRefs.current[i];
-      if (m) {
-        const pos = sampleOrbitalPosition(we.type, we.n, we.subIdx, 1.15);
-        const factor = Math.sin(t * we.speed + we.phase);
-        m.position.x = pos[0] + Math.sin(t * 2 + i) * 0.08;
-        m.position.y = pos[1] + Math.cos(t * 2 + i) * 0.08;
-        m.position.z = pos[2] + factor * 0.08;
-      }
-    });
-  });
-
-  return (
-    <group ref={groupRef}>
-      <Nucleus protons={protons} neutrons={neutrons} />
-      {cloudPoints.length > 0 && (
-        <points>
-          <bufferGeometry>
-            <bufferAttribute
-              attach="attributes-position"
-              count={cloudPoints.length}
-              array={new Float32Array(cloudPoints.flatMap(p => p.pos))}
-              itemSize={3}
-            />
-          </bufferGeometry>
-          <pointsMaterial
-            size={highQuality ? 0.05 : 0.065}
-            color="#38bdf8"
-            transparent
-            opacity={0.35}
-            blending={THREE.AdditiveBlending}
-            depthWrite={false}
-          />
-        </points>
-      )}
-      {waveElectrons.map((we, i) => (
-        <mesh
-          key={i}
-          ref={(el) => { if (el) waveMeshRefs.current[i] = el; }}
-        >
-          <sphereGeometry args={[0.07, 16, 16]} />
-          <meshStandardMaterial
-            color="#ffffff"
-            emissive={we.type === 's' ? '#38bdf8' : we.type === 'p' ? '#818cf8' : we.type === 'd' ? '#ec4899' : '#a855f7'}
-            emissiveIntensity={1.2}
-          />
-        </mesh>
-      ))}
-    </group>
-  );
-}
-
-// 3. Rutherford Nuclear Model (Positive Proton Nucleus with Orbiting Negative Electrons)
 function RutherfordModel3D({ protons, electrons, highQuality }: { protons: number; electrons: number; highQuality: boolean }) {
   const electronData = useMemo(() => {
     const arr = [];
-    const baseRadius = Math.max(1.4, Math.cbrt(Math.max(1, protons)) * 0.2 + 1.1);
+    const baseRadius = Math.max(1.6, Math.cbrt(Math.max(1, protons)) * 0.22 + 1.3);
     for (let i = 0; i < electrons; i++) {
-      const radius = baseRadius + (i % 5) * 0.3 + (Math.random() * 0.25);
-      const speed = 1.8 + (Math.random() * 0.8);
+      const radius = baseRadius + (i % 6) * 0.45;
+      const speed = 1.6 + (Math.random() * 0.6);
       const euler: [number, number, number] = [
-        (i * 1.2) % (Math.PI * 2),
-        (i * 0.8) % (Math.PI * 2),
-        (i * 1.4) % (Math.PI * 2)
+        ((i * 60) * Math.PI) / 180,
+        ((i * 45) * Math.PI) / 180,
+        ((i * 30) * Math.PI) / 180
       ];
       arr.push({ radius, speed, euler, offset: (i / Math.max(1, electrons)) * Math.PI * 2 });
     }
@@ -281,7 +661,7 @@ function RutherfordModel3D({ protons, electrons, highQuality }: { protons: numbe
 
   return (
     <group>
-      {/* Rutherford nucleus with protons only (no neutrons discovered yet) */}
+      {/* Central positive nucleus: protons only (no neutrons discovered yet in 1911) */}
       <Nucleus protons={protons} neutrons={0} />
       {electronData.map((e, i) => (
         <RutherfordElectron
@@ -297,7 +677,8 @@ function RutherfordModel3D({ protons, electrons, highQuality }: { protons: numbe
   );
 }
 
-// 4. Thomson Plum Pudding Model (Positive sphere with embedded electrons)
+// ─── 4. THOMSON PLUM PUDDING MODEL (Positive sphere with embedded electrons) ──
+
 function ThomsonModel3D({ protons, electrons, highQuality }: { protons: number; electrons: number; highQuality: boolean }) {
   const sphereRadius = Math.max(1.8, Math.cbrt(protons + electrons + 1) * 0.65);
 
@@ -369,12 +750,11 @@ function ThomsonModel3D({ protons, electrons, highQuality }: { protons: number; 
   );
 }
 
-// 5. Dalton Solid Sphere Model (Indivisible hard sphere scaled by atomic weight & mass density)
+// ─── 5. DALTON SOLID SPHERE MODEL ─────────────────────────────────────────────
+
 function DaltonModel3D({ protons, neutrons, highQuality }: { protons: number; neutrons: number; highQuality: boolean }) {
   const mass = protons + neutrons;
-  // Scaled by mass / atomic weight to accurately represent heavier vs lighter atoms according to Dalton's postulates
   const radius = mass === 0 ? 1.0 : Math.max(0.8, Math.cbrt(mass) * 0.45);
-
   const hue = protons > 0 ? (protons * 37) % 360 : 210;
   const color = protons > 0 ? `hsl(${hue}, 65%, 50%)` : '#64748b';
 
@@ -396,7 +776,6 @@ function DaltonModel3D({ protons, neutrons, highQuality }: { protons: number; ne
           metalness={0.8}
         />
       </mesh>
-      {/* Dalton atomic mass boundary ring & label indicator */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
         <ringGeometry args={[radius * 1.04, radius * 1.07, 64]} />
         <meshBasicMaterial color="#38bdf8" side={THREE.DoubleSide} transparent opacity={0.3} />
@@ -405,7 +784,8 @@ function DaltonModel3D({ protons, neutrons, highQuality }: { protons: number; ne
   );
 }
 
-// 6. Democritus Ancient Atomos Model (Philosophical geometric polyhedra with physical texture/hooks)
+// ─── 6. DEMOCRITUS ANCIENT ATOMOS MODEL ───────────────────────────────────────
+
 function DemocritusModel3D({ protons, neutrons, highQuality }: { protons: number; neutrons: number; highQuality: boolean }) {
   const meshRef = useRef<THREE.Group>(null!);
 
@@ -417,7 +797,6 @@ function DemocritusModel3D({ protons, neutrons, highQuality }: { protons: number
     }
   });
 
-  // Democritus posited different geometric shapes based on the element's properties (e.g. sharp/faceted vs smooth)
   const shapeType = (protons + neutrons) % 4;
   const scale = Math.max(1.1, Math.cbrt(Math.max(1, protons + neutrons)) * 0.38);
 
@@ -435,7 +814,6 @@ function DemocritusModel3D({ protons, neutrons, highQuality }: { protons: number
           flatShading
         />
       </mesh>
-      {/* Geometrical wireframe overlay representing Democritus's hooks/facets */}
       <mesh>
         {shapeType === 0 && <icosahedronGeometry args={[1.22, 0]} />}
         {shapeType === 1 && <octahedronGeometry args={[1.32, 0]} />}
@@ -532,16 +910,42 @@ function Section({ title, children, divider, textMain, textMuted }: { title: str
 function BohrShellBadges({ electrons }: { electrons: number }) {
   const shells = getBohrShellDistribution(electrons);
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <div className="grid grid-cols-2 gap-1.5">
         {shells.map((s) => (
-          <div key={s.shellIndex} className="bg-slate-800/80 border border-slate-700/60 px-2 py-1 rounded text-[11px] flex justify-between items-center">
-            <span className="text-cyan-400 font-bold">{s.name.split(' ')[0]} Shell:</span>
-            <span className="font-bold text-white">{s.count} <span className="text-slate-400 font-normal">/ {s.max}</span></span>
+          <div
+            key={s.shellIndex}
+            className={`px-2.5 py-1.5 rounded text-[11px] border flex flex-col justify-between transition-all ${
+              s.count > 0
+                ? "bg-slate-800/90 border-cyan-500/50 text-white shadow-sm"
+                : "bg-slate-900/40 border-slate-800/60 text-slate-500"
+            }`}
+          >
+            <div className="flex justify-between items-center">
+              <span className="font-bold text-cyan-400">{s.name.split(' ')[0]} Shell:</span>
+              <span className="font-mono font-bold text-white">
+                {s.count} <span className="text-slate-400 font-normal">/ {s.max}</span>
+              </span>
+            </div>
+            {/* Capacity progress bar */}
+            <div className="w-full bg-slate-700/50 h-1.5 rounded-full mt-1 overflow-hidden">
+              <div
+                className="h-full rounded-full transition-all"
+                style={{
+                  width: `${Math.min(100, (s.count / s.max) * 100)}%`,
+                  backgroundColor: s.color
+                }}
+              />
+            </div>
           </div>
         ))}
       </div>
-      <div className="text-[10px] text-slate-400 italic">Follows 2n² Bohr-Bury quantized maximum capacity rule.</div>
+      <div className="text-[10px] text-slate-400 space-y-0.5">
+        <p className="font-semibold text-cyan-300">● 2n² Bohr-Bury quantized capacity rule</p>
+        <p className="opacity-80">
+          Electrons occupy discrete, concentric circular orbits (K, L, M, N...). Radiation occurs strictly upon transitions between shells.
+        </p>
+      </div>
     </div>
   );
 }
@@ -549,22 +953,75 @@ function BohrShellBadges({ electrons }: { electrons: number }) {
 function QuantumOrbitalBadges({ electrons }: { electrons: number }) {
   const configs = getFullElectronConfiguration(electrons);
   return (
-    <div className="space-y-1.5">
+    <div className="space-y-2">
       <div className="flex flex-wrap gap-1">
         {configs.map((orb) => {
-          let col = "bg-blue-700";
-          if (orb.type === "p") col = "bg-indigo-700";
-          else if (orb.type === "d") col = "bg-pink-700";
-          else if (orb.type === "f") col = "bg-purple-800";
+          let col = "bg-sky-600 border-sky-400";
+          if (orb.type === "p") col = "bg-indigo-600 border-indigo-400";
+          else if (orb.type === "d") col = "bg-pink-600 border-pink-400";
+          else if (orb.type === "f") col = "bg-purple-700 border-purple-400";
           return (
-            <span key={orb.label} className={`px-1.5 py-0.5 rounded text-white text-[11px] font-mono font-bold ${col}`}>
+            <span
+              key={orb.label}
+              className={`px-1.5 py-0.5 rounded text-white text-[11px] font-mono font-bold border ${col} shadow-xs`}
+            >
               {orb.label}<sup>{orb.count}</sup>
             </span>
           );
         })}
         {configs.length === 0 && <span className="text-slate-500 text-xs italic">No electrons</span>}
       </div>
-      <div className="text-[10px] text-slate-400 italic">Aufbau principle & Hund's rule: 1s → 2s → 2p → 3s → 3p → 4s → 3d...</div>
+
+      {/* Subshell Legend */}
+      <div className="grid grid-cols-2 gap-1 text-[10px] text-slate-300 pt-1">
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-sky-400 shrink-0" />
+          <span><b>s</b>: Spherical (l=0)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-indigo-400 shrink-0" />
+          <span><b>p</b>: Dumbbells (px,py,pz)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-pink-400 shrink-0" />
+          <span><b>d</b>: Cloverleaf (l=2)</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="w-2.5 h-2.5 rounded-full bg-purple-400 shrink-0" />
+          <span><b>f</b>: Multi-lobe (l=3)</span>
+        </div>
+      </div>
+
+      <div className="text-[10px] text-slate-400 italic">
+        Aufbau principle & Hund's rule: 1s → 2s → 2p → 3s → 3p → 4s → 3d...
+      </div>
+    </div>
+  );
+}
+
+function RutherfordInfoBadges({ protons, electrons }: { protons: number; electrons: number }) {
+  return (
+    <div className="space-y-1.5 text-[11px] text-slate-300">
+      <div className="bg-slate-800/80 border border-slate-700/60 p-2 rounded space-y-1">
+        <div className="flex justify-between items-center text-xs">
+          <span className="text-amber-400 font-bold">Gold Foil Experiment (1911)</span>
+          <span className="text-slate-400 font-mono">Ernest Rutherford</span>
+        </div>
+        <p className="text-[10px] text-slate-300 leading-snug">
+          Alpha-particle scattering proved atomic mass & positive charge are concentrated in a tiny central nucleus, leaving 99.999% of the atom as empty space.
+        </p>
+      </div>
+      <div className="grid grid-cols-2 gap-1.5 text-[10px]">
+        <div className="bg-slate-800/50 p-1.5 rounded border border-slate-700/40">
+          <span className="text-red-400 font-bold">Protons:</span> {protons} (in nucleus)
+        </div>
+        <div className="bg-slate-800/50 p-1.5 rounded border border-slate-700/40">
+          <span className="text-blue-400 font-bold">Electrons:</span> {electrons} (cross-plane orbits)
+        </div>
+      </div>
+      <div className="text-[10px] text-slate-400 italic">
+        Pre-quantization model: electrons orbit in continuous 3D planes without fixed shells.
+      </div>
     </div>
   );
 }
@@ -572,12 +1029,9 @@ function QuantumOrbitalBadges({ electrons }: { electrons: number }) {
 // ─── MAIN APP ───────────────────────────────────────────────────────────────
 
 export default function App() {
-  // URL Backdoor/Shortcut parser (e.g. /buildyourownatom.html/carbon, /atom/#carbon, ?element=carbon)
   const getInitialElement = () => {
     try {
       const fullUrl = decodeURIComponent(window.location.pathname + window.location.search + window.location.hash).toLowerCase();
-      
-      // Extract segment following last slash, question mark, or hash
       const parts = fullUrl.split(/[\/\?\#=]/).map(p => p.trim()).filter(Boolean);
 
       for (const [key, el] of Object.entries(ELEMENTS)) {
@@ -761,6 +1215,52 @@ export default function App() {
     </div>
   );
 
+  // In-Canvas HUD for Model Context
+  const inCanvasHud = (
+    <>
+      {model === 'bohr' && (
+        <div className="absolute top-3 left-3 pointer-events-none select-none z-10 bg-slate-950/85 border border-cyan-500/40 backdrop-blur-xs p-2 rounded-lg text-xs space-y-1 shadow-lg max-w-[280px]">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Bohr Energy Shells (KLMN):</div>
+          <div className="flex flex-wrap gap-1 font-mono text-[10px] font-bold">
+            {getBohrShellDistribution(electrons).slice(0, 4).map(s => (
+              <span key={s.shellIndex} className={`px-1.5 py-0.5 rounded border ${s.count > 0 ? 'bg-slate-800 text-cyan-300 border-cyan-500/50' : 'bg-slate-900/50 text-slate-500 border-slate-800'}`}>
+                {s.letter}: {s.count}/{s.max}
+              </span>
+            ))}
+          </div>
+          <div className="text-[9px] text-slate-400">Quantized concentric orbits (2n² rule)</div>
+        </div>
+      )}
+
+      {model === 'schrodinger' && (
+        <div className="absolute top-3 left-3 pointer-events-none select-none z-10 bg-slate-950/85 border border-indigo-500/40 backdrop-blur-xs p-2 rounded-lg text-xs space-y-1 shadow-lg max-w-[300px]">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Quantum Subshells (Aufbau):</div>
+          <div className="flex flex-wrap gap-1 font-mono text-[10px] font-bold max-h-16 overflow-y-auto">
+            {getFullElectronConfiguration(electrons).map(c => (
+              <span key={c.label} className={`px-1 py-0.5 rounded text-white ${c.type === 's' ? 'bg-sky-600' : c.type === 'p' ? 'bg-indigo-600' : c.type === 'd' ? 'bg-pink-600' : 'bg-purple-700'}`}>
+                {c.label}<sup>{c.count}</sup>
+              </span>
+            ))}
+            {electrons === 0 && <span className="text-slate-500 italic text-[10px]">No electrons</span>}
+          </div>
+          <div className="flex items-center gap-2 text-[9px] text-slate-300 pt-0.5">
+            <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-sky-400" />s sphere</span>
+            <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />p dumbbell</span>
+            <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-pink-400" />d clover</span>
+          </div>
+        </div>
+      )}
+
+      {model === 'rutherford' && (
+        <div className="absolute top-3 left-3 pointer-events-none select-none z-10 bg-slate-950/85 border border-amber-500/40 backdrop-blur-xs p-2 rounded-lg text-xs space-y-1 shadow-lg">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Rutherford Nuclear Model:</div>
+          <div className="text-[10px] text-slate-300">Central positive nucleus · 99.999% empty space</div>
+          <div className="text-[9px] text-slate-400 italic">Continuous 3D cross-plane orbital planes</div>
+        </div>
+      )}
+    </>
+  );
+
   // Reusable Controls Content
   const controlsContent = (
     <div className="p-3 space-y-3">
@@ -831,8 +1331,14 @@ export default function App() {
           )}
 
           {model === 'schrodinger' && (
-            <Section title="Quantum Orbitals (Aufbau)" divider={divider} textMain={textMain} textMuted={textMuted}>
+            <Section title="Quantum Orbitals (Aufbau & Hund's Rule)" divider={divider} textMain={textMain} textMuted={textMuted}>
               <QuantumOrbitalBadges electrons={electrons} />
+            </Section>
+          )}
+
+          {model === 'rutherford' && (
+            <Section title="Rutherford Nuclear Model" divider={divider} textMain={textMain} textMuted={textMuted}>
+              <RutherfordInfoBadges protons={protons} electrons={electrons} />
             </Section>
           )}
 
@@ -900,7 +1406,8 @@ export default function App() {
         </div>
 
         <div className="w-full h-[360px] relative bg-black shrink-0 border-b border-slate-800">
-          <Canvas camera={{ position: [0, 0, 8], fov: 55 }} gl={{ antialias: true }} dpr={highQuality ? [1, 2] : [1, 1.5]}>
+          {inCanvasHud}
+          <Canvas camera={{ position: [0, 0, 8.5], fov: 55 }} gl={{ antialias: true }} dpr={highQuality ? [1, 2] : [1, 1.5]}>
             <color attach="background" args={[dark ? '#080c12' : '#f8fafc']} />
             {dark && <Stars radius={100} depth={50} count={highQuality ? 1500 : 800} factor={4} saturation={0} fade speed={1} />}
             <ambientLight intensity={Math.PI / 2} />
@@ -939,7 +1446,8 @@ export default function App() {
         </AnimatePresence>
 
         <div className="flex-1 relative overflow-hidden bg-black">
-          <Canvas camera={{ position: [0, 0, 8], fov: 55 }} gl={{ antialias: true }} dpr={highQuality ? [1, 2.5] : [1, 1.5]}>
+          {inCanvasHud}
+          <Canvas camera={{ position: [0, 0, 8.5], fov: 55 }} gl={{ antialias: true }} dpr={highQuality ? [1, 2.5] : [1, 1.5]}>
             <color attach="background" args={[dark ? '#080c12' : '#f8fafc']} />
             {dark && <Stars radius={100} depth={50} count={highQuality ? 1500 : 800} factor={4} saturation={0} fade speed={1} />}
             <ambientLight intensity={Math.PI / 2} />
@@ -977,4 +1485,3 @@ export default function App() {
     </div>
   );
 }
-
