@@ -4,45 +4,45 @@ import { descriptionSplitter } from '../helpers/descriptionSplitter'
 import { powToUnit } from '../helpers/powToUnit'
 export function getGraphics (visualLocation, textDatum, extraText, units: string[], sizeData) {
     const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
-    const w = isMobile ? Math.min(360, window.innerWidth - 20) : 450;
+    const w = isMobile ? Math.min(340, window.innerWidth - 32) : 450;
     const h = 500;
-    const x = isMobile ? 0 : visualLocation.descriptionX;
-    const y = isMobile ? 0 : visualLocation.descriptionY;
     const margin = isMobile ? 16 : 20;
+    const x = isMobile ? -w / 2 : visualLocation.descriptionX;
+    const y = isMobile ? Math.max(20, Math.floor(window.innerHeight / 2 - 260)) : visualLocation.descriptionY;
     const baseStyle = {
       fontFamily: 'Roboto',
       align: 'left', 
       fill: 0x000000, 
-      wordWrapWidth: w - (margin * 2) ,
+      wordWrapWidth: w - (margin * 2),
       wordWrap: true
     }
     const titleStyle = { 
-      fontSize: isMobile ? 28 : 40, 
+      fontSize: isMobile ? 22 : 40, 
       fontWeight: 'bold',
       ...baseStyle
     };
     const scaleStyle = { 
       ...baseStyle,
-      fontSize: isMobile ? 22 : 32, 
-      fill: 0x333333,
+      fontSize: isMobile ? 14 : 32, 
+      fill: 0x555555,
     };
     const unitFriendlyStyle = { 
       ...baseStyle,
-      fontSize: isMobile ? 24 : 32, 
+      fontSize: isMobile ? 16 : 32, 
       wordWrapWidth: w - (margin * 2),
-      fill: 0x333333,
-      wordWrap: false,
+      fill: 0x222222,
+      wordWrap: true,
       fontWeight: 'bold',
     };
     const exponentStyle = { 
       ...baseStyle,
-      fontSize: (isMobile ? 22 : scaleStyle.fontSize) - (isMobile ? 6 : 8), 
-      fill: 0x333333
+      fontSize: isMobile ? 11 : scaleStyle.fontSize - 8, 
+      fill: 0x555555
     };
     const descriptionStyle = { 
       ...baseStyle,
-      fontSize: isMobile ? 21 : 32,
-      lineHeight: isMobile ? 26 : 38
+      fontSize: isMobile ? 14.5 : 32,
+      lineHeight: isMobile ? 20 : 38
     };
     const friendly = powToUnit(sizeData, units, extraText)
     const splitDescription = descriptionSplitter(textDatum.description).replace(/",/g, '');
@@ -65,7 +65,7 @@ export function getGraphics (visualLocation, textDatum, extraText, units: string
     scaleText.roundPixels = true;
 
     exponentText.x = x + margin + 2.5 + scaleText.width;
-    exponentText.y = scaleText.y - (isMobile ? 6 : 7);
+    exponentText.y = scaleText.y - (isMobile ? 4 : 7);
     exponentText.roundPixels = true;
 
     meterText.x = exponentText.x + exponentText.width + 5;
@@ -73,25 +73,27 @@ export function getGraphics (visualLocation, textDatum, extraText, units: string
     meterText.roundPixels = true;
 
     descriptionText.x = x + margin;
-    descriptionText.y = scaleText.y + scaleText.height + (isMobile ? 12 : 10);
+    descriptionText.y = scaleText.y + scaleText.height + (isMobile ? 10 : 10);
     descriptionText.roundPixels = true;
 
     const descriptionContainer = new PIXI.Container();
     const graphics = new PIXI.Graphics();
     const totalTextHeight = descriptionText.y + descriptionText.height - y + margin;
-    graphics.beginFill(0x000000, .25);
-    graphics.drawRoundedRect(x + 5, y + 5, w, totalTextHeight, 15);
+    graphics.beginFill(0x000000, .3);
+    graphics.drawRoundedRect(x + 3, y + 3, w, totalTextHeight, 14);
     graphics.endFill();
-    graphics.lineStyle(2, 0x999999, 1);
+    graphics.lineStyle(1.5, 0xaaaaaa, 0.95);
     graphics.beginFill(0xFFFFFF, 0.98);
     let widthToUse = w;
-    if (unitFriendlyText.width + (margin * 2) >= widthToUse) {
+    if (!isMobile && unitFriendlyText.width + (margin * 2) >= widthToUse) {
       widthToUse = unitFriendlyText.width + (margin * 2);
     }
-    graphics.drawRoundedRect(x, y, widthToUse, totalTextHeight, 15);
+    graphics.drawRoundedRect(x, y, widthToUse, totalTextHeight, 14);
     graphics.endFill();
-    descriptionContainer.x -= widthToUse / 2;
-    descriptionContainer.y -= isMobile ? (totalTextHeight / 2) : (h / 2);
+    if (!isMobile) {
+      descriptionContainer.x -= widthToUse / 2;
+      descriptionContainer.y -= h / 2;
+    }
     descriptionContainer.addChild(graphics);
     descriptionContainer.addChild(titleText, 
                                   descriptionText, 

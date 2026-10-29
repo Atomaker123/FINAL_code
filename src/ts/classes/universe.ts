@@ -135,7 +135,11 @@ export class Universe {
     const percent = map(absoluteZoom + zoomOffset, -35, 27, 0, 1);
     this.hideAllItemsBut(item);
     let percentFinal = 0;
-    if (window.innerHeight < 750) { 
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    if (isMobile) { 
+      // On mobile, zoom in closer to the item so it fills the view and is not too zoomed out
+      percentFinal = percent + 0.001;
+    } else if (window.innerHeight < 750) { 
       percentFinal = percent + 0.0065;
     } else {
       percentFinal = percent + 0.004;

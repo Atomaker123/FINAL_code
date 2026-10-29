@@ -4,16 +4,16 @@
       "frame": {
         "x": 4,
         "y": 4,
-        "w": 400,
-        "h": 400
+        "w": 230,
+        "h": 230
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 1340,
-        "y": 728,
-        "w": 400,
-        "h": 400
+        "x": 1425,
+        "y": 812,
+        "w": 230,
+        "h": 230
       },
       "sourceSize": {
         "w": 2160,
@@ -22,18 +22,18 @@
     },
     "329": {
       "frame": {
-        "x": 408,
+        "x": 238,
         "y": 4,
-        "w": 348,
-        "h": 389
+        "w": 206,
+        "h": 230
       },
       "rotated": false,
       "trimmed": true,
       "spriteSourceSize": {
-        "x": 546,
-        "y": 393,
-        "w": 348,
-        "h": 389
+        "x": 617,
+        "y": 472,
+        "w": 206,
+        "h": 230
       },
       "sourceSize": {
         "w": 2160,
@@ -47,8 +47,8 @@
     "image": "new_items_custom.png",
     "format": "RGBA8888",
     "size": {
-      "w": 760,
-      "h": 408
+      "w": 448,
+      "h": 238
     },
     "scale": "1"
   }

@@ -51161,9 +51161,15 @@ class Item extends entity_1.Entity {
     showDescription() {
         this.text.visible = false;
         const descriptionGfx = description_1.getGraphics(this.visualLocation, this.textDatum, this.extraText, this.units, this.sizeData);
-        const s = this.visualLocation.descriptionScale;
-        if (s) {
-            descriptionGfx.scale = new pixi_js_legacy_1.Point(s, s);
+        const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+        if (isMobile) {
+            const inv = 1 / (this.currentScale || 1);
+            descriptionGfx.scale.set(inv, inv);
+        } else {
+            const s = this.visualLocation.descriptionScale;
+            if (s) {
+                descriptionGfx.scale = new pixi_js_legacy_1.Point(s, s);
+            }
         }
         descriptionGfx.zIndex = 2;
         this.container.addChild(descriptionGfx);
@@ -51195,6 +51201,13 @@ class Item extends entity_1.Entity {
             this.cull(scale, this.sizeData);
             this.container.scale = new pixi_js_legacy_1.Point(scale, scale);
             this.currentScale = scale;
+            if (this.description) {
+                const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+                if (isMobile) {
+                    const inv = 1 / (scale || 1);
+                    this.description.scale.set(inv, inv);
+                }
+            }
         }
         else {
             const scaleExp = this.scaleExp - globalZoomExp;
@@ -51207,6 +51220,13 @@ class Item extends entity_1.Entity {
                 if (!this.culled) {
                     this.container.scale = new pixi_js_legacy_1.Point(scale, scale);
                     this.currentScale = scale;
+                    if (this.description) {
+                        const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+                        if (isMobile) {
+                            const inv = 1 / (scale || 1);
+                            this.description.scale.set(inv, inv);
+                        }
+                    }
                 }
             }
         }
@@ -51821,7 +51841,11 @@ class Universe {
         const percent = map_1.map(absoluteZoom + zoomOffset, -35, 27, 0, 1);
         this.hideAllItemsBut(item);
         let percentFinal = 0;
-        if (window.innerHeight < 750) {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+        if (isMobile) {
+            percentFinal = percent + 0.001;
+        }
+        else if (window.innerHeight < 750) {
             percentFinal = percent + 0.0065;
         }
         else {
@@ -52066,12 +52090,11 @@ const descriptionSplitter_1 = require("../helpers/descriptionSplitter");
 const powToUnit_1 = require("../helpers/powToUnit");
 function getGraphics(visualLocation, textDatum, extraText, units, sizeData) {
     const isMobile = window.innerWidth <= 768;
-    // On mobile, use generous width and comfortable, large readable typography
-    const w = isMobile ? Math.min(360, window.innerWidth - 20) : 450;
+    const w = isMobile ? Math.min(340, window.innerWidth - 32) : 450;
     const h = 500;
-    const x = isMobile ? 0 : visualLocation.descriptionX;
-    const y = isMobile ? 0 : visualLocation.descriptionY;
     const margin = isMobile ? 16 : 20;
+    const x = isMobile ? -w / 2 : visualLocation.descriptionX;
+    const y = isMobile ? Math.max(20, Math.floor(window.innerHeight / 2 - 260)) : visualLocation.descriptionY;
     const baseStyle = {
         fontFamily: 'Roboto',
         align: 'left',
@@ -52079,11 +52102,11 @@ function getGraphics(visualLocation, textDatum, extraText, units, sizeData) {
         wordWrapWidth: w - (margin * 2),
         wordWrap: true
     };
-    const titleStyle = Object.assign({ fontSize: isMobile ? 28 : 40, fontWeight: 'bold' }, baseStyle);
-    const scaleStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 22 : 32, fill: 0x333333 });
-    const unitFriendlyStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 24 : 32, wordWrapWidth: w - (margin * 2), fill: 0x333333, wordWrap: false, fontWeight: 'bold' });
-    const exponentStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: (isMobile ? 22 : scaleStyle.fontSize) - (isMobile ? 6 : 8), fill: 0x333333 });
-    const descriptionStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 21 : 32, lineHeight: isMobile ? 26 : 38 });
+    const titleStyle = Object.assign({ fontSize: isMobile ? 22 : 40, fontWeight: 'bold' }, baseStyle);
+    const scaleStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 14 : 32, fill: 0x555555 });
+    const unitFriendlyStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 16 : 32, wordWrapWidth: w - (margin * 2), fill: 0x222222, wordWrap: true, fontWeight: 'bold' });
+    const exponentStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 11 : scaleStyle.fontSize - 8, fill: 0x555555 });
+    const descriptionStyle = Object.assign(Object.assign({}, baseStyle), { fontSize: isMobile ? 14.5 : 32, lineHeight: isMobile ? 20 : 38 });
     const friendly = powToUnit_1.powToUnit(sizeData, units, extraText);
     const splitDescription = descriptionSplitter_1.descriptionSplitter(textDatum.description).replace(/",/g, '');
     const titleText = new PIXI.Text(textDatum.title.replace(/\r?\n|\r/g, ''), titleStyle);
@@ -52106,7 +52129,7 @@ function getGraphics(visualLocation, textDatum, extraText, units, sizeData) {
     scaleText.roundPixels = true;
 
     exponentText.x = x + margin + 2.5 + scaleText.width;
-    exponentText.y = scaleText.y - (isMobile ? 6 : 7);
+    exponentText.y = scaleText.y - (isMobile ? 4 : 7);
     exponentText.roundPixels = true;
 
     meterText.x = exponentText.x + exponentText.width + 5;
@@ -52114,25 +52137,27 @@ function getGraphics(visualLocation, textDatum, extraText, units, sizeData) {
     meterText.roundPixels = true;
 
     descriptionText.x = x + margin;
-    descriptionText.y = scaleText.y + scaleText.height + (isMobile ? 12 : 10);
+    descriptionText.y = scaleText.y + scaleText.height + (isMobile ? 10 : 10);
     descriptionText.roundPixels = true;
 
     const descriptionContainer = new PIXI.Container();
     const graphics = new PIXI.Graphics();
     const totalTextHeight = descriptionText.y + descriptionText.height - y + margin;
-    graphics.beginFill(0x000000, .25);
-    graphics.drawRoundedRect(x + 5, y + 5, w, totalTextHeight, 15);
+    graphics.beginFill(0x000000, .3);
+    graphics.drawRoundedRect(x + 3, y + 3, w, totalTextHeight, 14);
     graphics.endFill();
-    graphics.lineStyle(2, 0x999999, 1);
+    graphics.lineStyle(1.5, 0xaaaaaa, 0.95);
     graphics.beginFill(0xFFFFFF, 0.98);
     let widthToUse = w;
-    if (unitFriendlyText.width + (margin * 2) >= widthToUse) {
+    if (!isMobile && unitFriendlyText.width + (margin * 2) >= widthToUse) {
         widthToUse = unitFriendlyText.width + (margin * 2);
     }
-    graphics.drawRoundedRect(x, y, widthToUse, totalTextHeight, 15);
+    graphics.drawRoundedRect(x, y, widthToUse, totalTextHeight, 14);
     graphics.endFill();
-    descriptionContainer.x -= widthToUse / 2;
-    descriptionContainer.y -= isMobile ? (totalTextHeight / 2) : (h / 2);
+    if (!isMobile) {
+        descriptionContainer.x -= widthToUse / 2;
+        descriptionContainer.y -= h / 2;
+    }
     descriptionContainer.addChild(graphics);
     descriptionContainer.addChild(titleText, descriptionText, scaleText, exponentText, meterText, unitFriendlyText);
     return descriptionContainer;
