@@ -168,14 +168,9 @@ def pack_spritesheets(items):
             img.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
 
         high_sprites.append((obj_id, img, it))
+        low_sprites.append((f"{obj_id}_quarter", img, it))
 
-        # In Scale of the Universe, quarter textures match 720x405 stage space (1/3 of 2160x1215)
-        low_w = max(1, int(round(img.width / 3.0)))
-        low_h = max(1, int(round(img.height / 3.0)))
-        low_img = img.copy().resize((low_w, low_h), Image.Resampling.LANCZOS)
-        low_sprites.append((f"{obj_id}_quarter", low_img, it))
-
-    def build_atlas(sprite_list, scale_str, image_filename, is_low=False):
+    def build_atlas(sprite_list, scale_str, image_filename):
         padding = 4
         total_w = sum(img.width + padding for _, img, _ in sprite_list) + padding
         max_h = max(img.height for _, img, _ in sprite_list) + (padding * 2)
@@ -191,18 +186,11 @@ def pack_spritesheets(items):
             pos_x = float(it.get('posX', 0.0))
             pos_y = float(it.get('posY', 0.0))
 
-            if is_low:
-                # 720x405 stage coordinates with anchor (0.5, 0.5) at (360, 202.5)
-                source_w = 720
-                source_h = 405
-                src_x = int(round((pos_x + 1080.0) / 3.0 - spr_img.width / 2.0))
-                src_y = int(round((pos_y + 607.5) / 3.0 - spr_img.height / 2.0))
-            else:
-                # 2160x1215 stage coordinates with anchor (0.5, 0.5) at (1080, 607.5)
-                source_w = 2160
-                source_h = 1215
-                src_x = int(round(pos_x + 1080.0 - spr_img.width / 2.0))
-                src_y = int(round(pos_y + 607.5 - spr_img.height / 2.0))
+            # 2160x1215 stage coordinates with anchor (0.5, 0.5) at (1080, 607.5)
+            source_w = 2160
+            source_h = 1215
+            src_x = int(round(pos_x + 1080.0 - spr_img.width / 2.0))
+            src_y = int(round(pos_y + 607.5 - spr_img.height / 2.0))
 
             frames_dict[frame_key] = {
                 "frame": {"x": current_x, "y": y, "w": spr_img.width, "h": spr_img.height},
@@ -224,8 +212,8 @@ def pack_spritesheets(items):
 
         return atlas_img, {"frames": frames_dict, "meta": meta_dict}
 
-    high_atlas, high_json = build_atlas(high_sprites, "1", "new_items_custom.png", is_low=False)
-    low_atlas, low_json = build_atlas(low_sprites, "0.25", "quarter_items_custom.png", is_low=True)
+    high_atlas, high_json = build_atlas(high_sprites, "1", "new_items_custom.png")
+    low_atlas, low_json = build_atlas(low_sprites, "1", "quarter_items_custom.png")
 
     return high_atlas, high_json, low_atlas, low_json
 

@@ -116,6 +116,10 @@ export class Item extends Entity {
       } else {
         const scale = E(scaleExp) * this.coeff * this.realRatio;
         this.cull(scale, this.sizeData);
+        if (!this.culled) {
+          this.container.scale = new Point(scale, scale);
+          this.currentScale = scale;
+        }
       }
     }
   }
@@ -147,6 +151,7 @@ export class Item extends Entity {
     this.setSpriteEvents(this.spriteLow);
     const here = this;
     function onButtonDown() {
+      if (here.culled) return;
       here.onClick(here);
       sa_event("item_" + here.sizeData.objectID.toString());
     }
@@ -167,6 +172,7 @@ export class Item extends Entity {
     ];
     const here = this;
     function onButtonDown() {
+      if (here.culled) return;
       here.onClick(here);
     }
     sprite.hitArea = new Polygon(points);

@@ -51100,11 +51100,17 @@ class Entity {
     cull(scale, sizeData) {
         if (scale < 0.001 || scale > 12) {
             this.container.renderable = false;
+            this.container.visible = false;
             this.culled = true;
+            if (this.spriteLow) this.spriteLow.interactive = false;
+            if (this.sprite) this.sprite.interactive = false;
         }
         else {
             this.container.renderable = true;
+            this.container.visible = true;
             this.culled = false;
+            if (this.spriteLow) this.spriteLow.interactive = true;
+            if (this.sprite) this.sprite.interactive = true;
         }
         if (scale < 0.075 || !this.isHighQuality) {
             this.setQuality(0);
@@ -51198,6 +51204,10 @@ class Item extends entity_1.Entity {
             else {
                 const scale = e_1.E(scaleExp) * this.coeff * this.realRatio;
                 this.cull(scale, this.sizeData);
+                if (!this.culled) {
+                    this.container.scale = new pixi_js_legacy_1.Point(scale, scale);
+                    this.currentScale = scale;
+                }
             }
         }
     }
@@ -51229,6 +51239,7 @@ class Item extends entity_1.Entity {
         this.setSpriteEvents(this.spriteLow);
         const here = this;
         function onButtonDown() {
+            if (here.culled) return;
             here.onClick(here);
             sa_event("item_" + here.sizeData.objectID.toString());
         }
@@ -51249,6 +51260,7 @@ class Item extends entity_1.Entity {
         ];
         const here = this;
         function onButtonDown() {
+            if (here.culled) return;
             here.onClick(here);
         }
         sprite.hitArea = new pixi_js_legacy_1.Polygon(points);
