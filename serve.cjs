@@ -30,6 +30,10 @@ app.use((req, res, next) => {
 
 // Serve the unified website from dist/
 app.use(express.static(path.join(__dirname, 'dist')))
+// Fallbacks for direct development & preview
+app.use('/sotu', express.static(path.join(__dirname, 'sotu-app')))
+app.use('/atom', express.static(path.join(__dirname, 'dist-atom')))
+app.use(express.static(path.join(__dirname, 'Atomaker-website-main')))
 app.get('/sotu', (req, res) => res.redirect('/sotu/'))
 app.get('/atom', (req, res) => res.redirect('/atom/'))
 

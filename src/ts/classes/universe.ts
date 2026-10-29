@@ -278,7 +278,8 @@ export class Universe {
       "Universe",
       "cricket ball",
       "Test Galaxy Orb",
-      "India"
+      "India",
+      "Cricket Ball"
     ].map(normalizeTitle));
 
     const onClick = (item: Item) => {

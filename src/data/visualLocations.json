@@ -4384,28 +4384,30 @@
   },
   {
     "objectID": 328,
-    "boundX": -100.0,
-    "boundY": -100.0,
-    "boundW": 200.0,
-    "boundH": 200.0,
-    "titleX": 0,
-    "titleY": -150.0,
+    "boundX": 290.0,
+    "boundY": 150.0,
+    "boundW": 340.0,
+    "boundH": 340.0,
+    "titleX": 460.0,
+    "titleY": 510.0,
     "titleScale": 1,
     "titleWrap": true,
-    "descriptionX": 0,
-    "descriptionY": 0
+    "descriptionX": -60.0,
+    "descriptionY": 220.0,
+    "zoomOffset": 0.05
   },
   {
     "objectID": 329,
-    "boundX": -100.0,
-    "boundY": -100.0,
-    "boundW": 200.0,
-    "boundH": 200.0,
-    "titleX": 0,
-    "titleY": -150.0,
+    "boundX": -230.0,
+    "boundY": -190.0,
+    "boundW": 300.0,
+    "boundH": 340.0,
+    "titleX": -80.0,
+    "titleY": 175.0,
     "titleScale": 1,
     "titleWrap": true,
-    "descriptionX": 0,
-    "descriptionY": 0
+    "descriptionX": 380.0,
+    "descriptionY": -50.0,
+    "zoomOffset": 0.05
   }
 ]

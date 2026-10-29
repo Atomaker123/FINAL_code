@@ -53,15 +53,21 @@ def ensure_library_init():
                 shutil.copyfile(balls_src, target_img)
             seed_items.append({
                 "objectID": 328,
-                "title": "cricket ball",
-                "description": "its a ballll",
+                "title": "Cricket Ball",
+                "description": "Ready to play cricket? A standard cricket ball is about 7.2 cm in diameter, used in the beloved sport played by billions worldwide.",
                 "exponent": -2.0,
                 "coeff": 7.2,
                 "cullFac": 1.0,
                 "realRatio": 1.0,
-                "boundW": 200.0,
-                "boundH": 200.0,
-                "titleY": -150.0,
+                "posX": 460.0,
+                "posY": 320.0,
+                "boundW": 340.0,
+                "boundH": 340.0,
+                "titleX": 460.0,
+                "titleY": 510.0,
+                "descriptionX": -60.0,
+                "descriptionY": 220.0,
+                "zoomOffset": 0.05,
                 "imageFileName": "328_cricket_ball.png"
             })
         with open(LIBRARY_JSON, 'w', encoding='utf-8') as f:
@@ -161,31 +167,49 @@ def pack_spritesheets(items):
         if img.width > max_dim or img.height > max_dim:
             img.thumbnail((max_dim, max_dim), Image.Resampling.LANCZOS)
 
-        high_sprites.append((obj_id, img))
+        high_sprites.append((obj_id, img, it))
 
-        low_w = max(1, int(img.width * 0.25))
-        low_h = max(1, int(img.height * 0.25))
+        # In Scale of the Universe, quarter textures match 720x405 stage space (1/3 of 2160x1215)
+        low_w = max(1, int(round(img.width / 3.0)))
+        low_h = max(1, int(round(img.height / 3.0)))
         low_img = img.copy().resize((low_w, low_h), Image.Resampling.LANCZOS)
-        low_sprites.append((f"{obj_id}_quarter", low_img))
+        low_sprites.append((f"{obj_id}_quarter", low_img, it))
 
-    def build_atlas(sprite_list, scale_str, image_filename):
+    def build_atlas(sprite_list, scale_str, image_filename, is_low=False):
         padding = 4
-        total_w = sum(img.width + padding for _, img in sprite_list) + padding
-        max_h = max(img.height for _, img in sprite_list) + (padding * 2)
+        total_w = sum(img.width + padding for _, img, _ in sprite_list) + padding
+        max_h = max(img.height for _, img, _ in sprite_list) + (padding * 2)
 
         atlas_img = Image.new('RGBA', (total_w, max_h), (0, 0, 0, 0))
         frames_dict = {}
 
         current_x = padding
-        for frame_key, spr_img in sprite_list:
+        for frame_key, spr_img, it in sprite_list:
             y = padding
             atlas_img.paste(spr_img, (current_x, y), spr_img)
+
+            pos_x = float(it.get('posX', 0.0))
+            pos_y = float(it.get('posY', 0.0))
+
+            if is_low:
+                # 720x405 stage coordinates with anchor (0.5, 0.5) at (360, 202.5)
+                source_w = 720
+                source_h = 405
+                src_x = int(round((pos_x + 1080.0) / 3.0 - spr_img.width / 2.0))
+                src_y = int(round((pos_y + 607.5) / 3.0 - spr_img.height / 2.0))
+            else:
+                # 2160x1215 stage coordinates with anchor (0.5, 0.5) at (1080, 607.5)
+                source_w = 2160
+                source_h = 1215
+                src_x = int(round(pos_x + 1080.0 - spr_img.width / 2.0))
+                src_y = int(round(pos_y + 607.5 - spr_img.height / 2.0))
+
             frames_dict[frame_key] = {
                 "frame": {"x": current_x, "y": y, "w": spr_img.width, "h": spr_img.height},
                 "rotated": False,
-                "trimmed": False,
-                "spriteSourceSize": {"x": 0, "y": 0, "w": spr_img.width, "h": spr_img.height},
-                "sourceSize": {"w": spr_img.width, "h": spr_img.height}
+                "trimmed": True,
+                "spriteSourceSize": {"x": src_x, "y": src_y, "w": spr_img.width, "h": spr_img.height},
+                "sourceSize": {"w": source_w, "h": source_h}
             }
             current_x += spr_img.width + padding
 
@@ -200,8 +224,8 @@ def pack_spritesheets(items):
 
         return atlas_img, {"frames": frames_dict, "meta": meta_dict}
 
-    high_atlas, high_json = build_atlas(high_sprites, "1", "new_items_custom.png")
-    low_atlas, low_json = build_atlas(low_sprites, "0.25", "quarter_items_custom.png")
+    high_atlas, high_json = build_atlas(high_sprites, "1", "new_items_custom.png", is_low=False)
+    low_atlas, low_json = build_atlas(low_sprites, "0.25", "quarter_items_custom.png", is_low=True)
 
     return high_atlas, high_json, low_atlas, low_json
 
@@ -265,21 +289,29 @@ def sync_all(items=None):
 
     custom_vis = []
     for it in items:
-        bw = float(it.get("boundW", 200.0))
-        bh = float(it.get("boundH", 200.0))
-        ty = float(it.get("titleY", -150.0))
+        pos_x = float(it.get("posX", 0.0))
+        pos_y = float(it.get("posY", 0.0))
+        bw = float(it.get("boundW", 240.0))
+        bh = float(it.get("boundH", 240.0))
+        title_x = float(it.get("titleX", pos_x))
+        title_y = float(it.get("titleY", pos_y + bh / 2.0 + 35.0))
+        desc_x = float(it.get("descriptionX", pos_x - 450.0 if pos_x > 0 else pos_x + 450.0))
+        desc_y = float(it.get("descriptionY", pos_y - 50.0))
+        zoom_offset = float(it.get("zoomOffset", 0.05))
+
         custom_vis.append({
             "objectID": int(it["objectID"]),
-            "boundX": -bw / 2.0,
-            "boundY": -bh / 2.0,
+            "boundX": pos_x - bw / 2.0,
+            "boundY": pos_y - bh / 2.0,
             "boundW": bw,
             "boundH": bh,
-            "titleX": 0,
-            "titleY": ty,
+            "titleX": title_x,
+            "titleY": title_y,
             "titleScale": 1,
             "titleWrap": True,
-            "descriptionX": 0,
-            "descriptionY": 0
+            "descriptionX": desc_x,
+            "descriptionY": desc_y,
+            "zoomOffset": zoom_offset
         })
     combined_vis = base_vis + custom_vis
 
@@ -343,7 +375,9 @@ def sync_all(items=None):
     return True
 
 def add_custom_item(image_path_or_file, title, description, size_val=None, unit_name=None,
-                    exponent_val=None, coeff_val=None, bound_w=200.0, bound_h=200.0, title_y=-150.0):
+                    exponent_val=None, coeff_val=None, pos_x=0.0, pos_y=0.0,
+                    bound_w=240.0, bound_h=240.0, title_x=None, title_y=None,
+                    description_x=None, description_y=None, zoom_offset=0.05):
     ensure_library_init()
     items = get_library_items()
 
@@ -364,6 +398,15 @@ def add_custom_item(image_path_or_file, title, description, size_val=None, unit_
     else:
         raise ValueError("Invalid image input.")
 
+    px = float(pos_x)
+    py = float(pos_y)
+    bw = float(bound_w)
+    bh = float(bound_h)
+    tx = float(title_x) if title_x is not None else px
+    ty = float(title_y) if title_y is not None else py + bh / 2.0 + 35.0
+    dx = float(description_x) if description_x is not None else (px - 450.0 if px > 0 else px + 450.0)
+    dy = float(description_y) if description_y is not None else py - 50.0
+
     new_item = {
         "objectID": object_id,
         "title": title.strip(),
@@ -372,9 +415,15 @@ def add_custom_item(image_path_or_file, title, description, size_val=None, unit_
         "coeff": float(coeff),
         "cullFac": 1.0,
         "realRatio": 1.0,
-        "boundW": float(bound_w),
-        "boundH": float(bound_h),
-        "titleY": float(title_y),
+        "posX": px,
+        "posY": py,
+        "boundW": bw,
+        "boundH": bh,
+        "titleX": tx,
+        "titleY": ty,
+        "descriptionX": dx,
+        "descriptionY": dy,
+        "zoomOffset": float(zoom_offset),
         "imageFileName": dest_filename
     }
 

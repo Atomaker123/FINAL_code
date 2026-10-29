@@ -51950,7 +51950,10 @@ class Universe {
                 "The Distance Earth Has Travelled (Relative to Sun)",
                 "Observable Universe",
                 "Universe",
-                "cricket ball"
+                "cricket ball",
+                "Cricket Ball",
+                "India",
+                "india"
             ].map(normalizeTitle));
             const onClick = (item) => {
                 this.itemClicked(item);
