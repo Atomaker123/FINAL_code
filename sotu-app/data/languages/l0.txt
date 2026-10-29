@@ -59,7 +59,7 @@ Alnitak illuminates the Flame Nebula.  Alnitak is also the easternmost star of t
 Gacrux
 'Gacrux can be found in the constellation Crux.  Crux, which means "cross" in Latin, is known as the Southern Cross.  Gacrux is a binary star.  The largest of the two is a red giant.',
 Uranus
-'A lot of people like to think "Uranus" sounds like "your anus".  There are many other, and better, pronunciations.  Uranus can also be pronouced like "Yer-uh-niss" or "Seh-venth-pla-net.",
+Uranus is the seventh planet from the Sun and an ice giant.  It is unique because it rotates almost completely on its side, with an axial tilt of 98 degrees.  It also has the coldest atmosphere of any planet in the Solar System, reaching temperatures as low as -224° C!
 Neptune
 Currently, Neptune is the farthest planet in the Solar System from the Sun.  It takes 164.8 Earth years for it to orbit the Sun.  You'll never see Neptune complete a single orbit in your whole life, unless life expectancies increase.
 Wolf 359
@@ -415,9 +415,9 @@ Things that are extremely rare are "inf-rare". (infinitely rare).  Inf-rare is a
 Microwave Wavelength
 Actually, the range of microwaves is pretty large.  They range from one millimeter to one meter.  So you see, this electromagnetic wave, with a wavelength of one centimeter, comfortably fits into this range and thus is a microwave!
 FM Radio Wavelength
-F and M are the sixth and thirteenth letters of the alphabet.  Six is a perfect number, while thirteen is not.  We all have our differences, and we have to learn to accept them.  That's the only way we'll live in harmony.
+"FM" stands for frequency modulation.  These radio waves typically have wavelengths around three meters, which is about the length of a small car.  FM encodes sound by varying the wave's frequency, making it much clearer and less prone to electrical static than AM radio.
 AM Radio Wavelength
-A and M are the first and thirteenth letters of the alphabet.  One is a perfect square, while thirteen is not.  We all have our differences, and we have to learn to accept them.  That's the only way we'll live in harmony.
+"AM" stands for amplitude modulation.  AM radio waves have wavelengths of hundreds of meters—longer than the height of the Eiffel Tower!  Because these waves are so long, they can bend around hills and bounce off Earth's ionosphere, traveling thousands of kilometers at night.
 DNA
 DNA, which is a nucleic acid, stores the genetic information of almost all living things on Earth (except for some viruses.)  A single human cell contains 3 meters of deoxyribonucleic acid, which holds about 25,000 genes in about 3 billion base pairs.
 White Blood Cell
