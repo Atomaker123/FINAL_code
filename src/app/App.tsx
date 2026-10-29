@@ -1278,6 +1278,35 @@ export default function App() {
         {(protons + neutrons) > 0 && <div className="flex justify-between md:block"><span>Mass #:</span> <span className={`font-bold ${textMain}`}>{protons + neutrons}</span></div>}
       </div>
 
+      {protons > 0 && (
+        <a
+          href={`https://atom-view.vercel.app/pages/element_${protons}.html`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full"
+        >
+          <button
+            className="w-full py-2 rounded text-xs font-bold uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-1.5"
+            style={{
+              background: "linear-gradient(135deg, #0ea5e9 0%, #6366f1 100%)",
+              color: "#fff",
+              boxShadow: "0 0 12px 2px rgba(99,102,241,0.35)",
+            }}
+            onMouseEnter={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 22px 5px rgba(99,102,241,0.55)";
+              (e.currentTarget as HTMLButtonElement).style.filter = "brightness(1.12)";
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 0 12px 2px rgba(99,102,241,0.35)";
+              (e.currentTarget as HTMLButtonElement).style.filter = "";
+            }}
+          >
+            <span style={{ fontSize: "0.95em" }}>🔬</span>
+            View this atom in a molecule
+          </button>
+        </a>
+      )}
+
       <button onClick={handleReset} className="w-full py-2 rounded bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold uppercase tracking-widest transition-colors shadow-sm">
         Reset Particles
       </button>
