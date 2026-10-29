@@ -4398,15 +4398,15 @@
   },
   {
     "objectID": 329,
-    "boundX": -230.0,
+    "boundX": -510.0,
     "boundY": -190.0,
     "boundW": 300.0,
     "boundH": 340.0,
-    "titleX": -80.0,
+    "titleX": -360.0,
     "titleY": 175.0,
     "titleScale": 1,
     "titleWrap": true,
-    "descriptionX": 380.0,
+    "descriptionX": 100.0,
     "descriptionY": -50.0,
     "zoomOffset": 0.05
   }
