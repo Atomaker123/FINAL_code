@@ -10,7 +10,7 @@ const addItemPy = `#!/usr/bin/env python3
 add_item.py — Command Line Interface to add items into Scale of the Universe 2.
 
 Usage (Interactive mode):
-    python add_item.py
+    pythssson add_item.py
 
 Usage (CLI arguments mode):
     python add_item.py --image path/to/image.png --title "My Galaxy" --desc "An epic spiral galaxy" --size "100000 ly"
@@ -798,4 +798,4 @@ fs.writeFileSync(path.join(ROOT, 'add_item.py'), addItemPy, 'utf8');
 console.log('Created add_item.py');
 
 fs.writeFileSync(path.join(ROOT, 'upload_server.py'), uploadServerPy, 'utf8');
-console.log('Created upload_server.py');
+console.log('Created upload_server.py');
