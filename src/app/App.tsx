@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Stars, Html } from "@react-three/drei";
 import * as THREE from "three";
+import { Search, X } from "lucide-react";
 import elementData from "../imports/elements.json";
 import {
   ModelType,
@@ -15,6 +16,7 @@ import {
   ORBITAL_RGB,
   SubshellConfig
 } from "./components/historicalModels";
+import { getStandardNeutrons } from "./components/atomPhysics";
 
 type ElementDB = Record<string, {
   name: string; symbol: string; description?: string;
@@ -23,6 +25,16 @@ type ElementDB = Record<string, {
 }>;
 
 const ELEMENTS = elementData as ElementDB;
+
+const ALL_ELEMENTS = Object.keys(ELEMENTS)
+  .map(k => Number(k))
+  .filter(z => !isNaN(z) && z >= 1 && z <= 118)
+  .sort((a, b) => a - b)
+  .map(z => ({
+    z,
+    name: ELEMENTS[String(z)]?.name ?? `Element ${z}`,
+    symbol: ELEMENTS[String(z)]?.symbol ?? `E${z}`
+  }));
 
 function getLocalInfo(protons: number, neutrons: number) {
   const e = ELEMENTS[String(protons)];
@@ -1040,7 +1052,7 @@ export default function App() {
         const symbol = el.symbol.toLowerCase();
         
         if (parts.includes(name) || parts.includes(symbol) || parts.includes(String(z))) {
-          return { protons: z, neutrons: z, electrons: z };
+          return { protons: z, neutrons: getStandardNeutrons(z), electrons: z };
         }
       }
     } catch (e) {
@@ -1066,6 +1078,83 @@ export default function App() {
   const decayTimerRef = useRef<ReturnType<typeof setInterval>|null>(null);
   const activeDecayTimerRef = useRef<ReturnType<typeof setInterval>|null>(null);
 
+  // Search Bar State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [selectedSearchIdx, setSelectedSearchIdx] = useState(0);
+  const searchContainerRef = useRef<HTMLDivElement>(null);
+
+  const filteredElements = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return ALL_ELEMENTS.slice(0, 25);
+    return ALL_ELEMENTS.filter(el => {
+      const zStr = String(el.z);
+      const name = el.name.toLowerCase();
+      const sym = el.symbol.toLowerCase();
+      return sym === q || sym.startsWith(q) || name.startsWith(q) || name.includes(q) || zStr === q || zStr.startsWith(q);
+    }).sort((a, b) => {
+      const aSym = a.symbol.toLowerCase();
+      const bSym = b.symbol.toLowerCase();
+      const aName = a.name.toLowerCase();
+      const bName = b.name.toLowerCase();
+      if (aSym === q && bSym !== q) return -1;
+      if (bSym === q && aSym !== q) return 1;
+      if (aName === q && bName !== q) return -1;
+      if (bName === q && aName !== q) return 1;
+      if (aSym.startsWith(q) && !bSym.startsWith(q)) return -1;
+      if (bSym.startsWith(q) && !aSym.startsWith(q)) return 1;
+      if (aName.startsWith(q) && !bName.startsWith(q)) return -1;
+      if (bName.startsWith(q) && !aName.startsWith(q)) return 1;
+      return a.z - b.z;
+    }).slice(0, 15);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (searchContainerRef.current && !searchContainerRef.current.contains(e.target as Node)) {
+        setIsSearchOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelectElement = (z: number) => {
+    if (decayTimerRef.current) clearInterval(decayTimerRef.current);
+    if (activeDecayTimerRef.current) clearInterval(activeDecayTimerRef.current);
+    setDecayMsg(null);
+    setIsDecaying(false);
+    setCountdown(0);
+    const stdN = getStandardNeutrons(z);
+    setProtons(z);
+    setElectrons(z);
+    setNeutrons(stdN);
+    setSearchQuery("");
+    setIsSearchOpen(false);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent) => {
+    if (!isSearchOpen && (e.key === "ArrowDown" || e.key === "Enter")) {
+      setIsSearchOpen(true);
+      return;
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedSearchIdx(prev => (prev + 1) % Math.max(1, filteredElements.length));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedSearchIdx(prev => (prev - 1 + filteredElements.length) % Math.max(1, filteredElements.length));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (filteredElements.length > 0) {
+        const item = filteredElements[selectedSearchIdx] || filteredElements[0];
+        handleSelectElement(item.z);
+      }
+    } else if (e.key === "Escape") {
+      setIsSearchOpen(false);
+    }
+  };
+
   const protonsRef = useRef(protons);
   const neutronsRef = useRef(neutrons);
   const electronsRef = useRef(electrons);
@@ -1074,7 +1163,9 @@ export default function App() {
   electronsRef.current = electrons;
 
   const isBlackHole = Math.abs(neutrons - protons) >= 150;
-  const isStable = protons >= 1 && electrons >= 1 && Math.abs(protons - neutrons) <= 2 && Math.abs(protons - electrons) <= 5;
+  const stdNeutronsForP = getStandardNeutrons(protons);
+  const maxDiff = protons <= 20 ? 2 : Math.max(3, Math.round(protons * 0.08));
+  const isStable = protons >= 1 && electrons >= 1 && Math.abs(neutrons - stdNeutronsForP) <= maxDiff && Math.abs(protons - electrons) <= 4;
   const atomName = isBlackHole ? "BLACK HOLE" : (ELEMENTS[String(protons)]?.name || (protons > 0 ? `Element Z=${protons}` : "Atom Visualizer"));
 
   const triggerActiveDecay = (species: "Proton" | "Neutron" | "Electron") => {
@@ -1085,9 +1176,10 @@ export default function App() {
       const p = protonsRef.current;
       const n = neutronsRef.current;
       const e = electronsRef.current;
+      const stdN = getStandardNeutrons(p);
 
       if (species === "Proton") {
-        if (p - n <= 2 || p <= 0) {
+        if (p - stdN <= 2 || p <= 0) {
           clearInterval(activeDecayTimerRef.current!);
           activeDecayTimerRef.current = null;
           setIsDecaying(false);
@@ -1096,7 +1188,7 @@ export default function App() {
         }
         setProtons(curr => Math.max(0, curr - 1));
       } else if (species === "Neutron") {
-        if (n - p <= 2 || n <= 0) {
+        if (n - stdN <= 2 || n <= 0) {
           clearInterval(activeDecayTimerRef.current!);
           activeDecayTimerRef.current = null;
           setIsDecaying(false);
@@ -1105,7 +1197,7 @@ export default function App() {
         }
         setNeutrons(curr => Math.max(0, curr - 1));
       } else if (species === "Electron") {
-        if (e - p <= 2 || e <= 0) {
+        if (Math.abs(e - p) <= 2 || e <= 0) {
           clearInterval(activeDecayTimerRef.current!);
           activeDecayTimerRef.current = null;
           setIsDecaying(false);
@@ -1126,9 +1218,10 @@ export default function App() {
       return;
     }
 
-    const isProtonImbalance = protons - neutrons > 10;
-    const isNeutronImbalance = neutrons - protons > 10;
-    const isElectronImbalance = electrons - protons > 10;
+    const stdN = getStandardNeutrons(protons);
+    const isProtonImbalance = protons > 0 && (protons - stdN) > 12;
+    const isNeutronImbalance = protons > 0 && (neutrons - stdN) > 12;
+    const isElectronImbalance = protons > 0 && Math.abs(electrons - protons) > 10;
 
     const hasImbalance = isProtonImbalance || isNeutronImbalance || isElectronImbalance;
 
@@ -1391,11 +1484,93 @@ export default function App() {
   return (
     <div className={`w-full h-full flex flex-col ${bg} transition-colors duration-300 md:overflow-hidden overflow-y-auto`}>
       {/* Top Header Bar */}
-      <div className={`flex items-center px-3 py-2 border-b ${divider} ${dark ? "bg-[#0a1018]" : "bg-white"} gap-2 shrink-0 z-10 sticky top-0 md:relative`}>
+      <div className={`flex items-center px-3 py-2 border-b ${divider} ${dark ? "bg-[#0a1018]" : "bg-white"} gap-2 shrink-0 z-20 sticky top-0 md:relative`}>
         <button onClick={() => setSideOpen(v => !v)} className={`hidden md:block p-1.5 rounded text-base ${dark ? "hover:bg-slate-800" : "hover:bg-slate-100"} ${textMain}`} title="Toggle Controls">☰</button>
         <div className="flex-1 flex items-center justify-center gap-2 sm:gap-3 min-w-0">
           {elem && <span className={`text-xl sm:text-2xl font-black ${dark ? "text-slate-500" : "text-slate-300"}`}>{elem.symbol}</span>}
           <span className={`font-bold tracking-wide text-sm sm:text-base truncate ${textMain} ${isBlackHole ? "text-purple-400 animate-pulse" : ""}`}>{atomName}</span>
+          
+          {/* Element Search Bar */}
+          <div ref={searchContainerRef} className="relative shrink min-w-[110px] w-32 sm:w-44 md:w-56">
+            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs transition-colors border ${
+              dark 
+                ? "bg-slate-900/90 border-slate-700/80 focus-within:border-cyan-400 focus-within:ring-1 focus-within:ring-cyan-400/40" 
+                : "bg-slate-100 border-slate-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-400/40"
+            }`}>
+              <Search className={`w-3.5 h-3.5 shrink-0 ${dark ? "text-cyan-400" : "text-blue-500"}`} />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => {
+                  setSearchQuery(e.target.value);
+                  setIsSearchOpen(true);
+                  setSelectedSearchIdx(0);
+                }}
+                onFocus={() => setIsSearchOpen(true)}
+                onKeyDown={handleSearchKeyDown}
+                placeholder="Find element..."
+                className={`w-full bg-transparent border-none outline-none text-xs ${dark ? "text-white placeholder-slate-400" : "text-slate-900 placeholder-slate-400"}`}
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setIsSearchOpen(false);
+                  }}
+                  className="p-0.5 text-slate-400 hover:text-white"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            {/* Dropdown Popover */}
+            {isSearchOpen && (
+              <div className={`absolute top-full left-0 mt-1.5 w-56 sm:w-64 max-h-72 overflow-y-auto rounded-xl border shadow-2xl backdrop-blur-md z-50 p-1 divide-y ${
+                dark 
+                  ? "bg-[#0b121e]/95 border-slate-700/80 divide-slate-800" 
+                  : "bg-white/95 border-slate-200 divide-slate-100 text-slate-800"
+              }`}>
+                {filteredElements.length === 0 ? (
+                  <div className="px-3 py-2 text-xs text-slate-400 text-center">No elements found</div>
+                ) : (
+                  filteredElements.map((item, idx) => {
+                    const isSelected = idx === selectedSearchIdx;
+                    return (
+                      <button
+                        key={item.z}
+                        type="button"
+                        onClick={() => handleSelectElement(item.z)}
+                        onMouseEnter={() => setSelectedSearchIdx(idx)}
+                        className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-left text-xs transition-colors ${
+                          isSelected
+                            ? dark 
+                              ? "bg-cyan-950/70 text-cyan-200" 
+                              : "bg-blue-50 text-blue-900"
+                            : dark 
+                              ? "hover:bg-slate-800/60 text-slate-200" 
+                              : "hover:bg-slate-100 text-slate-700"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`w-7 h-5 flex items-center justify-center font-bold text-[10px] rounded shrink-0 ${
+                            dark ? "bg-slate-800 text-cyan-300 border border-slate-700" : "bg-slate-200 text-blue-700"
+                          }`}>
+                            {item.symbol}
+                          </span>
+                          <span className="font-medium truncate">{item.name}</span>
+                        </div>
+                        <span className={`text-[10px] font-mono shrink-0 ml-2 ${dark ? "text-slate-400" : "text-slate-400"}`}>
+                          #{item.z}
+                        </span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            )}
+          </div>
           
           <div className="hidden sm:flex items-center gap-1.5 bg-blue-950/60 border border-blue-800/80 px-2 py-0.5 rounded-full">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
