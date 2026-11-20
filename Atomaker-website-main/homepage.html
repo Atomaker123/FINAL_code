@@ -214,6 +214,7 @@
       <a href="aboutus.html">About Us</a>
       <a href="ourmission.html">Our Mission</a>
       <a href="layout.html">Layout</a>
+      <a href="feedback.html">Feedback</a>
     </nav>
   </header>
 
@@ -277,6 +278,17 @@
 
     </div>
   </div>
+
+  <script>
+    // Forward secret feedback viewer link to feedback.html
+    function checkSecretFeedbackHash() {
+      if (window.location.hash.toLowerCase() === '#viewfeedback123') {
+        window.location.href = 'feedback.html#viewfeedback123';
+      }
+    }
+    checkSecretFeedbackHash();
+    window.addEventListener('hashchange', checkSecretFeedbackHash);
+  </script>
 
 </body>
 </html>
