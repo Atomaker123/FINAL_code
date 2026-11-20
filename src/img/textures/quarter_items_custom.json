@@ -4,40 +4,40 @@
       "frame": {
         "x": 4,
         "y": 4,
-        "w": 100,
-        "h": 100
+        "w": 230,
+        "h": 230
       },
       "rotated": false,
-      "trimmed": false,
+      "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 100,
-        "h": 100
+        "x": 1425,
+        "y": 812,
+        "w": 230,
+        "h": 230
       },
       "sourceSize": {
-        "w": 100,
-        "h": 100
+        "w": 2160,
+        "h": 1215
       }
     },
     "329_quarter": {
       "frame": {
-        "x": 108,
+        "x": 238,
         "y": 4,
-        "w": 87,
-        "h": 97
+        "w": 206,
+        "h": 230
       },
       "rotated": false,
-      "trimmed": false,
+      "trimmed": true,
       "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 87,
-        "h": 97
+        "x": 617,
+        "y": 472,
+        "w": 206,
+        "h": 230
       },
       "sourceSize": {
-        "w": 87,
-        "h": 97
+        "w": 2160,
+        "h": 1215
       }
     }
   },
@@ -47,9 +47,9 @@
     "image": "quarter_items_custom.png",
     "format": "RGBA8888",
     "size": {
-      "w": 199,
-      "h": 108
+      "w": 448,
+      "h": 238
     },
-    "scale": "0.25"
+    "scale": "1"
   }
 }

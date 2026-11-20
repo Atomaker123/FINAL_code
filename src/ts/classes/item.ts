@@ -77,9 +77,15 @@ export class Item extends Entity {
       this.units,
       this.sizeData
     );
-    const s = this.visualLocation.descriptionScale;
-    if (s) {
-      descriptionGfx.scale = new Point(s, s);
+    const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+    if (isMobile) {
+      const inv = 1 / (this.currentScale || 1);
+      descriptionGfx.scale.set(inv, inv);
+    } else {
+      const s = this.visualLocation.descriptionScale;
+      if (s) {
+        descriptionGfx.scale = new Point(s, s);
+      }
     }
     descriptionGfx.zIndex = 2;
     this.container.addChild(descriptionGfx);
@@ -109,6 +115,13 @@ export class Item extends Entity {
       this.cull(scale, this.sizeData);
       this.container.scale = new Point(scale, scale);
       this.currentScale = scale;
+      if (this.description) {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+        if (isMobile) {
+          const inv = 1 / (scale || 1);
+          this.description.scale.set(inv, inv);
+        }
+      }
     } else {
       const scaleExp = this.scaleExp - globalZoomExp;
       if (scaleExp > 2 || scaleExp < -4) {
@@ -116,6 +129,17 @@ export class Item extends Entity {
       } else {
         const scale = E(scaleExp) * this.coeff * this.realRatio;
         this.cull(scale, this.sizeData);
+        if (!this.culled) {
+          this.container.scale = new Point(scale, scale);
+          this.currentScale = scale;
+          if (this.description) {
+            const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+            if (isMobile) {
+              const inv = 1 / (scale || 1);
+              this.description.scale.set(inv, inv);
+            }
+          }
+        }
       }
     }
   }
@@ -147,6 +171,7 @@ export class Item extends Entity {
     this.setSpriteEvents(this.spriteLow);
     const here = this;
     function onButtonDown() {
+      if (here.culled) return;
       here.onClick(here);
       sa_event("item_" + here.sizeData.objectID.toString());
     }
@@ -167,6 +192,7 @@ export class Item extends Entity {
     ];
     const here = this;
     function onButtonDown() {
+      if (here.culled) return;
       here.onClick(here);
     }
     sprite.hitArea = new Polygon(points);

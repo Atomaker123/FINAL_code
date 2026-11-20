@@ -70,10 +70,16 @@ export class Entity {
   cull(scale: number, sizeData: any) {
     if (scale < 0.001 || scale > 12) {
       this.container.renderable = false;
+      this.container.visible = false;
       this.culled = true;
+      if (this.spriteLow) this.spriteLow.interactive = false;
+      if (this.sprite) this.sprite.interactive = false;
     } else {
       this.container.renderable = true;
+      this.container.visible = true;
       this.culled = false;
+      if (this.spriteLow) this.spriteLow.interactive = true;
+      if (this.sprite) this.sprite.interactive = true;
     }
     if (scale < 0.075 || !this.isHighQuality) {
       this.setQuality(0);
