@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,7 +28,7 @@
             align-items: center;
             justify-content: space-between;
             flex-wrap: wrap;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .logo-title {
@@ -61,7 +62,8 @@
             transition: color 0.2s ease, text-decoration 0.2s ease;
         }
 
-        nav a:hover, nav a.active {
+        nav a:hover,
+        nav a.active {
             color: #1a1a88;
             text-decoration: underline;
         }
@@ -91,7 +93,7 @@
             border-radius: 30px;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
         }
 
         .tab-btn:hover {
@@ -177,7 +179,9 @@
             transition: border-color 0.2s, box-shadow 0.2s;
         }
 
-        input:focus, select:focus, textarea:focus {
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: #4169e1;
             box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.25);
@@ -357,7 +361,7 @@
             border: 2px solid #c0b8e6;
             border-radius: 16px;
             padding: 20px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
             transition: transform 0.15s ease;
         }
 
@@ -430,7 +434,7 @@
             text-align: center;
             padding: 40px 20px;
             color: #666;
-            background: rgba(255,255,255,0.6);
+            background: rgba(255, 255, 255, 0.6);
             border-radius: 18px;
             border: 2px dashed #b0a5e2;
         }
@@ -482,8 +486,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-6px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @media (max-width: 768px) {
@@ -493,30 +504,37 @@
                 gap: 12px;
                 padding: 12px 15px;
             }
+
             nav {
                 display: flex;
                 flex-wrap: wrap;
                 justify-content: center;
                 gap: 8px 16px;
             }
+
             nav a {
                 margin: 0 4px;
                 font-size: 15px;
             }
+
             .content-box {
                 padding: 24px 18px;
                 border-radius: 18px;
             }
+
             .form-grid {
                 grid-template-columns: 1fr;
                 gap: 0;
             }
+
             .form-group.full-width {
                 grid-column: span 1;
             }
+
             .box-title {
                 font-size: 1.8rem;
             }
+
             .admin-controls {
                 flex-direction: column;
                 align-items: stretch;
@@ -524,6 +542,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <header>
@@ -556,15 +575,18 @@
         </div>
 
         <!-- Secret Admin Mode Notice -->
-        <div id="adminModeBanner" style="display: none; background: #e8f4fd; border: 2px solid #4169e1; border-radius: 14px; padding: 12px 20px; margin-bottom: 25px; color: #1a365d; font-size: 14px; text-align: center; font-family: 'Playpen Sans', cursive;">
-            🔒 <strong>Admin Mode Active:</strong> You unlocked the feedback archive using <code>#viewfeedback123</code>. Normal visitors cannot see this.
+        <div id="adminModeBanner"
+            style="display: none; background: #e8f4fd; border: 2px solid #4169e1; border-radius: 14px; padding: 12px 20px; margin-bottom: 25px; color: #1a365d; font-size: 14px; text-align: center; font-family: 'Playpen Sans', cursive;">
+            🔒 <strong>Admin Mode Active:</strong> You unlocked the feedback archive using
+            <code>#viewfeedback123</code>. Normal visitors cannot see this.
         </div>
 
         <!-- VIEW 1: SUBMIT FEEDBACK -->
         <div id="submitView" class="content-box">
             <h2 class="box-title">We Value Your Feedback!</h2>
             <p class="box-subtitle">
-                Help us improve Atomaker. Whether you have ideas for new models, found an issue, or simply want to share your experience, we would love to hear from you!
+                Help us improve Atomaker. Whether you have ideas for new models, found an issue, or simply want to share
+                your experience, we would love to hear from you!
             </p>
 
             <div id="alertBanner" class="alert-banner"></div>
@@ -578,7 +600,8 @@
 
                     <div class="form-group">
                         <label for="userEmail">Email Address (Optional)</label>
-                        <input type="email" id="userEmail" placeholder="e.g. name@example.com (if you'd like a response)">
+                        <input type="email" id="userEmail"
+                            placeholder="e.g. name@example.com (if you'd like a response)">
                     </div>
 
                     <div class="form-group">
@@ -609,7 +632,9 @@
 
                     <div class="form-group full-width">
                         <label for="feedbackMessage">Your Feedback / Comments</label>
-                        <textarea id="feedbackMessage" placeholder="What did you like? What can we do better? Please be as detailed as you like..." required></textarea>
+                        <textarea id="feedbackMessage"
+                            placeholder="What did you like? What can we do better? Please be as detailed as you like..."
+                            required></textarea>
                     </div>
                 </div>
 
@@ -621,7 +646,8 @@
             <div class="info-callout">
                 <h4>📬 How is your feedback delivered?</h4>
                 <p>
-                    All feedback submitted here is sent directly to the website owner's inbox and securely archived in the website's feedback database so our team can review every suggestion.
+                    All feedback submitted here is sent directly to the website owner's inbox and securely archived in
+                    the website's feedback database so our team can review every suggestion.
                 </p>
             </div>
         </div>
@@ -646,14 +672,14 @@
                 </div>
 
                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="admin-action-btn" id="refreshBtn" onclick="refreshAdminFeedback()">
+                        🔄 Refresh
+                    </button>
                     <button type="button" class="admin-action-btn" onclick="exportToCSV()">
                         📥 Download CSV / Excel
                     </button>
-                    <button type="button" class="admin-action-btn" onclick="openEmailSettings()">
-                        ⚙️ Email Settings
-                    </button>
-                    <button type="button" class="admin-action-btn btn-danger" onclick="clearAllFeedback()">
-                        🗑️ Clear Local
+                    <button type="button" class="admin-action-btn btn-danger" onclick="clearLocalCache()">
+                        🗑️ Clear Local Cache
                     </button>
                 </div>
             </div>
@@ -663,13 +689,18 @@
                 <!-- Dynamically populated -->
             </div>
 
-            <!-- Info box explaining Vercel persistence and access -->
+            <!-- Info box explaining Google Sheets persistence and access -->
             <div class="info-callout" style="margin-top: 30px;">
-                <h4>🔐 Accessing Your Vercel Feedback Anywhere:</h4>
+                <h4>🔐 Cloud Feedback Archive (Google Sheets):</h4>
                 <ul>
-                    <li><strong>Direct Email Delivery:</strong> Submissions are automatically forwarded to <strong id="displayEmail">9agroup2@npsinr.com</strong> via FormSubmit. You will receive an instant email for every feedback sent!</li>
-                    <li><strong>Online Spreadsheets (Google Sheets):</strong> You can connect this to a Google Sheet so every entry creates a new row. Click <em>Email Settings</em> above to configure a webhook URL.</li>
-                    <li><strong>Local Archive:</strong> Responses submitted on this device are automatically cached and ready to download as a CSV file.</li>
+                    <li><strong>Real-time Cloud Sync:</strong> All feedback is stored directly in your connected Google
+                        Sheet and automatically fetched live on this page.</li>
+                    <li><strong>Direct Email Delivery:</strong> Submissions are automatically delivered to
+                        <strong>9agroup2@npsinr.com</strong>.
+                    </li>
+                    <li><strong>Cross-Device Access:</strong> Any team member accessing this page with
+                        <code>#viewfeedback123</code> sees all feedback submissions from visitors worldwide.
+                    </li>
                 </ul>
             </div>
         </div>
@@ -682,16 +713,25 @@
 
     <!-- Script to handle Form Submission, Storage, and View -->
     <script>
-        // Default target email where FormSubmit sends every feedback
+        // ==========================================
+        // GOOGLE APPS SCRIPT WEB APP INTEGRATION
+        // Single Web App URL used for BOTH submitting feedback (POST) and fetching all feedback responses (GET)
+        // ==========================================
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyopO5_1cwEgC7reWu2NvIbXueBI600EZmuf2I4DGRFQTqxvQaXocV-Hm5S9L9iuPmx/exec"; // <-- Paste your 1 Google Apps Script Web App URL here
         const DEFAULT_RECIPIENT_EMAIL = "9agroup2@npsinr.com";
         const STORAGE_KEY = "atomaker_feedback_archive";
-        const SETTINGS_KEY = "atomaker_feedback_settings";
 
         let currentRating = 5;
+
+        // Check if a valid Google Apps Script Web App URL is configured
+        function isGoogleScriptConfigured() {
+            return Boolean(GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim().startsWith("http"));
+        }
 
         // Initialize Star Rating Interaction
         function initStarRating() {
             const starContainer = document.getElementById('starContainer');
+            if (!starContainer) return;
             const stars = starContainer.querySelectorAll('.star');
             const label = document.getElementById('ratingLabel');
 
@@ -704,7 +744,7 @@
             };
 
             stars.forEach(star => {
-                star.addEventListener('mouseover', function() {
+                star.addEventListener('mouseover', function () {
                     const val = parseInt(this.getAttribute('data-value'));
                     stars.forEach(s => {
                         const sVal = parseInt(s.getAttribute('data-value'));
@@ -714,15 +754,15 @@
                             s.classList.remove('hover');
                         }
                     });
-                    label.textContent = labels[val];
+                    if (label) label.textContent = labels[val];
                 });
 
-                star.addEventListener('mouseout', function() {
+                star.addEventListener('mouseout', function () {
                     stars.forEach(s => s.classList.remove('hover'));
                     updateStarDisplay(currentRating);
                 });
 
-                star.addEventListener('click', function() {
+                star.addEventListener('click', function () {
                     currentRating = parseInt(this.getAttribute('data-value'));
                     updateStarDisplay(currentRating);
                 });
@@ -737,7 +777,7 @@
                         s.classList.remove('selected');
                     }
                 });
-                label.textContent = labels[val];
+                if (label) label.textContent = labels[val];
             }
         }
 
@@ -765,7 +805,7 @@
         }
 
         // View Switcher (Submit vs Admin)
-        function switchView(viewName) {
+        async function switchView(viewName) {
             const submitView = document.getElementById('submitView');
             const adminView = document.getElementById('adminView');
             const tabSubmitBtn = document.getElementById('tabSubmitBtn');
@@ -776,20 +816,20 @@
                     alert('Access denied: You need the secret admin link to view feedback.');
                     return;
                 }
-                submitView.style.display = 'none';
-                adminView.style.display = 'block';
-                tabSubmitBtn.classList.remove('active');
-                tabAdminBtn.classList.add('active');
-                renderAdminFeedback();
+                if (submitView) submitView.style.display = 'none';
+                if (adminView) adminView.style.display = 'block';
+                if (tabSubmitBtn) tabSubmitBtn.classList.remove('active');
+                if (tabAdminBtn) tabAdminBtn.classList.add('active');
+                await renderAdminFeedback();
             } else {
-                submitView.style.display = 'block';
-                adminView.style.display = 'none';
-                tabSubmitBtn.classList.add('active');
+                if (submitView) submitView.style.display = 'block';
+                if (adminView) adminView.style.display = 'none';
+                if (tabSubmitBtn) tabSubmitBtn.classList.add('active');
                 if (tabAdminBtn) tabAdminBtn.classList.remove('active');
             }
         }
 
-        // Helper to get saved feedback items
+        // Helper to get locally cached feedback items
         function getStoredFeedback() {
             try {
                 const raw = localStorage.getItem(STORAGE_KEY);
@@ -799,41 +839,46 @@
             }
         }
 
-        // Helper to save feedback items
+        // Helper to save feedback items to cache
         function saveFeedbackItem(item) {
             const list = getStoredFeedback();
-            list.unshift(item); // Add newest on top
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+            if (!list.some(existing => existing.id === item.id)) {
+                list.unshift(item);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+            }
         }
 
-        // Helper for recipient email
-        function getRecipientEmail() {
+        // Fetch all feedback from Google Sheets Script (Single URL: GET)
+        async function fetchFeedbackFromGoogleSheets() {
+            if (!isGoogleScriptConfigured()) {
+                console.info("GOOGLE_SCRIPT_URL not yet configured. Displaying local entries.");
+                return getStoredFeedback();
+            }
+
             try {
-                const saved = localStorage.getItem(SETTINGS_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.email && parsed.email.trim()) {
-                        return parsed.email.trim();
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'GET',
+                    signal: controller.signal
+                });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (Array.isArray(data)) {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                        return data;
                     }
                 }
-            } catch (e) {}
-            return DEFAULT_RECIPIENT_EMAIL;
+            } catch (err) {
+                console.warn('Could not fetch from Google Sheets, using local cache:', err);
+            }
+            return getStoredFeedback();
         }
 
-        function getWebhookUrl() {
-            try {
-                const saved = localStorage.getItem(SETTINGS_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed.webhook && parsed.webhook.trim()) {
-                        return parsed.webhook.trim();
-                    }
-                }
-            } catch (e) {}
-            return "";
-        }
-
-        // Handle Form Submission
+        // Handle Form Submission (Single URL: POST)
         async function handleFeedbackSubmit(e) {
             e.preventDefault();
 
@@ -873,16 +918,27 @@
                 timestamp: timestamp
             };
 
-            // 1. Save to local browser storage archive
-            saveFeedbackItem(feedbackData);
+            // 1. Submit to Google Sheets Web App endpoint (no-cors mode)
+            if (isGoogleScriptConfigured()) {
+                try {
+                    fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'text/plain;charset=utf-8'
+                        },
+                        body: JSON.stringify(feedbackData)
+                    }).catch(err => {
+                        console.warn('Google Sheets background post warning:', err);
+                    });
+                } catch (err) {
+                    console.error('Google Sheets submission error:', err);
+                }
+            }
 
-            // 2. Deliver via FormSubmit to owner's email
-            const recipientEmail = getRecipientEmail();
-            let emailSent = false;
-
+            // 2. Deliver email notification via FormSubmit
             try {
-                const endpoint = 'https://formsubmit.co/ajax/' + encodeURIComponent(recipientEmail);
-                const response = await fetch(endpoint, {
+                fetch('https://formsubmit.co/ajax/' + encodeURIComponent(DEFAULT_RECIPIENT_EMAIL), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -898,35 +954,15 @@
                         SubmittedAt: timestamp,
                         _template: "table"
                     })
-                });
-
-                if (response.ok) {
-                    emailSent = true;
-                }
+                }).catch(() => { });
             } catch (err) {
-                console.warn('FormSubmit network notification info:', err);
-            }
-//Google sheets
-            const webhookUrl = getWebhookUrl();
-            
-            if (webhookUrl) {
-                try {
-                    fetch(webhookUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: {
-                            'Content-Type': 'text/plain;charset=utf-8'
-                        },
-                        body: JSON.stringify(feedbackData)
-                    }).catch(err => {
-                        console.error('Google Sheets submission failed:', err);
-                    });
-                } catch (err) {
-                    console.error('Google Sheets error:', err);
-                }
+                console.warn('Email notification error:', err);
             }
 
-            // Success feedback to user
+            // 3. Cache locally as well
+            saveFeedbackItem(feedbackData);
+
+            // Re-enable button and show success
             submitBtn.disabled = false;
             submitBtn.innerHTML = '<span>🚀 Submit Feedback</span>';
 
@@ -943,49 +979,64 @@
             currentRating = 5;
             initStarRating();
 
-            // Auto scroll to message
-            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (banner) {
+                banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         }
 
         function showAlert(msg, type) {
             const banner = document.getElementById('alertBanner');
+            if (!banner) return;
             banner.className = 'alert-banner ' + (type === 'success' ? 'alert-success' : 'alert-error');
             banner.innerHTML = msg;
             banner.style.display = 'block';
         }
 
         // Render Admin Dashboard
-        function renderAdminFeedback() {
-            const items = getStoredFeedback();
+        async function renderAdminFeedback(isRefresh = false) {
             const listContainer = document.getElementById('feedbackList');
             const statCount = document.getElementById('statCount');
             const statAvgRating = document.getElementById('statAvgRating');
-            const displayEmail = document.getElementById('displayEmail');
 
-            displayEmail.textContent = getRecipientEmail();
-            statCount.textContent = items.length;
+            if (!listContainer) return;
+
+            // Show loading placeholder if empty or actively refreshing
+            if (isRefresh || !listContainer.children.length) {
+                listContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <h3 style="color:#3333cc; margin: 0 0 8px 0;">Loading Feedback from Google Sheets...</h3>
+                        <p style="margin:0; font-size: 14px;">Fetching live submissions...</p>
+                    </div>
+                `;
+            }
+
+            const items = await fetchFeedbackFromGoogleSheets();
+
+            if (statCount) statCount.textContent = items.length;
 
             if (items.length === 0) {
-                statAvgRating.textContent = '0.0 / 5 ★';
+                if (statAvgRating) statAvgRating.textContent = '0.0 / 5 ★';
                 listContainer.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">📬</div>
                         <h3 style="color:#3333cc; margin: 0 0 8px 0;">No Feedback Submissions Yet</h3>
-                        <p style="margin:0; font-size: 14px;">Feedback submitted on this browser or through the website will appear here.</p>
+                        <p style="margin:0; font-size: 14px;">Feedback submitted via the website and saved to Google Sheets will appear here in real time.</p>
                     </div>
                 `;
                 return;
             }
 
             // Calculate average rating
-            const totalRating = items.reduce((acc, curr) => acc + (curr.rating || 5), 0);
+            const totalRating = items.reduce((acc, curr) => acc + (Number(curr.rating) || 5), 0);
             const avg = (totalRating / items.length).toFixed(1);
-            statAvgRating.textContent = `${avg} / 5 ★`;
+            if (statAvgRating) statAvgRating.textContent = `${avg} / 5 ★`;
 
             // Build feedback cards
             let html = '';
             items.forEach(item => {
-                const starStr = '★'.repeat(item.rating || 5) + '☆'.repeat(5 - (item.rating || 5));
+                const r = Math.min(5, Math.max(1, Number(item.rating) || 5));
+                const starStr = '★'.repeat(r) + '☆'.repeat(5 - r);
                 const authorEmail = item.email && item.email !== 'Not provided' ? ` &bull; <span class="card-email">${escapeHtml(item.email)}</span>` : '';
 
                 html += `
@@ -1007,6 +1058,19 @@
             });
 
             listContainer.innerHTML = html;
+        }
+
+        async function refreshAdminFeedback() {
+            const refreshBtn = document.getElementById('refreshBtn');
+            if (refreshBtn) {
+                refreshBtn.disabled = true;
+                refreshBtn.innerHTML = '🔄 Refreshing...';
+            }
+            await renderAdminFeedback(true);
+            if (refreshBtn) {
+                refreshBtn.disabled = false;
+                refreshBtn.innerHTML = '🔄 Refresh';
+            }
         }
 
         // Export All to CSV file
@@ -1035,49 +1099,23 @@
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `atomaker_feedback_${new Date().toISOString().slice(0,10)}.csv`;
+            a.download = `atomaker_feedback_${new Date().toISOString().slice(0, 10)}.csv`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        // Email & Webhook Settings Modal / Prompt
-        function openEmailSettings() {
-            const currentEmail = getRecipientEmail();
-            const currentWebhook = getWebhookUrl();
-
-            const newEmail = prompt(
-                "Enter the recipient email address where feedback should be emailed:\n(All feedback submitted via Vercel will be sent directly here)",
-                currentEmail
-            );
-
-            if (newEmail !== null && newEmail.trim() !== '') {
-                const newWebhook = prompt(
-                    "Optional: Enter a Google Apps Script Web App URL or Webhook for real-time Google Sheet sync (or leave blank):",
-                    currentWebhook
-                );
-
-                const settings = {
-                    email: newEmail.trim(),
-                    webhook: (newWebhook !== null ? newWebhook.trim() : currentWebhook)
-                };
-                localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-                renderAdminFeedback();
-                alert(`Settings saved! Future feedback will be sent to: ${newEmail.trim()}`);
-            }
-        }
-
-        // Clear local feedback storage
-        function clearAllFeedback() {
+        // Clear local browser cached feedback entries
+        function clearLocalCache() {
             const items = getStoredFeedback();
             if (items.length === 0) {
-                alert('No feedback entries to clear.');
+                alert('No cached entries to clear.');
                 return;
             }
-            if (confirm(`Are you sure you want to clear ${items.length} locally cached feedback entries? (Submissions already sent to your email will remain safe in your inbox)`)) {
+            if (confirm(`Clear ${items.length} locally cached feedback entries? Your submissions remain safely stored in Google Sheets.`)) {
                 localStorage.removeItem(STORAGE_KEY);
-                renderAdminFeedback();
+                renderAdminFeedback(true);
             }
         }
 
@@ -1088,7 +1126,7 @@
         }
 
         // Run on page load
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             initStarRating();
             checkSecretAccess();
             window.addEventListener('hashchange', checkSecretAccess);
@@ -1096,4 +1134,5 @@
     </script>
 
 </body>
+
 </html>
